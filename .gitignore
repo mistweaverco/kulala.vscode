@@ -1,0 +1,10 @@
+node_modules/
+.cache/
+dist/
+*.vsix
+.vscode-test/
+.DS_Store
+*.wasm
+node_modules.tmp/
+.pnpm-debug.log
+.pnpm-store/

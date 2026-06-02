@@ -1,0 +1,281 @@
+{
+  "name": "kulala",
+  "displayName": "Kulala",
+  "version": "0.1.0",
+  "description": "REST client for VS Code powered by kulala-core (.http files, environments, scripts)",
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "api",
+    "curl",
+    "graphql",
+    "http",
+    "rest"
+  ],
+  "homepage": "https://github.com/mistweaverco/kulala.vscode",
+  "bugs": {
+    "url": "https://github.com/mistweaverco/kulala.vscode/issues"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mistweaverco/kulala.vscode"
+  },
+  "publisher": "mistweaverco",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build:syntax": "./scripts/build-syntax.sh",
+    "build": "./scripts/package.sh",
+    "watch": "node esbuild.mjs --watch",
+    "lint": "tsc --noEmit",
+    "package": "./scripts/package.sh",
+    "prepare": "vp config"
+  },
+  "dependencies": {
+    "web-tree-sitter": "0.25.10"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.19",
+    "@types/vscode": "1.120.0",
+    "@vscode/vsce": "3.9.1",
+    "daisyui": "4.12.24",
+    "esbuild": "0.25.12",
+    "tree-sitter-javascript": "0.25.0",
+    "tree-sitter-json": "0.24.8",
+    "tree-sitter-typescript": "0.23.2",
+    "typescript": "5.9.3",
+    "vite-plus": "catalog:"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "kulala.sendRequest",
+        "title": "Kulala: Send Request",
+        "icon": "$(play)"
+      },
+      {
+        "command": "kulala.sendAllRequests",
+        "title": "Kulala: Send All Requests"
+      },
+      {
+        "command": "kulala.cancelRequest",
+        "title": "Kulala: Cancel Request",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "kulala.selectEnvironment",
+        "title": "Kulala: Select Environment"
+      },
+      {
+        "command": "kulala.copyAsCurl",
+        "title": "Kulala: Copy Request as cURL"
+      },
+      {
+        "command": "kulala.pasteFromCurl",
+        "title": "Kulala: Paste Request from cURL"
+      },
+      {
+        "command": "kulala.inspectRequest",
+        "title": "Kulala: Inspect Request"
+      },
+      {
+        "command": "kulala.clearGlobals",
+        "title": "Kulala: Clear Script Globals"
+      },
+      {
+        "command": "kulala.showResponse",
+        "title": "Kulala: Show Last Response"
+      },
+      {
+        "command": "kulala.applyJqFilter",
+        "title": "Kulala: Apply JQ Filter to Response"
+      },
+      {
+        "command": "kulala.closeWebSocket",
+        "title": "Kulala: Close WebSocket"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "kulala.sendRequest",
+        "key": "ctrl+alt+r",
+        "mac": "cmd+alt+r",
+        "when": "editorLangId == http || editorLangId == rest"
+      },
+      {
+        "command": "kulala.sendAllRequests",
+        "key": "ctrl+alt+a",
+        "mac": "cmd+alt+a",
+        "when": "editorLangId == http || editorLangId == rest"
+      },
+      {
+        "command": "kulala.cancelRequest",
+        "key": "ctrl+alt+k",
+        "mac": "cmd+alt+k",
+        "when": "kulala.requestRunning"
+      },
+      {
+        "command": "kulala.applyJqFilter",
+        "key": "ctrl+alt+f",
+        "mac": "cmd+alt+f",
+        "when": "activeWebviewPanelId == kulalaResponse"
+      },
+      {
+        "command": "kulala.closeWebSocket",
+        "key": "ctrl+alt+w",
+        "mac": "cmd+alt+w",
+        "when": "activeWebviewPanelId == kulalaResponse"
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "command": "kulala.sendRequest",
+          "when": "editorLangId == http || editorLangId == rest",
+          "group": "kulala@1"
+        },
+        {
+          "command": "kulala.sendAllRequests",
+          "when": "editorLangId == http || editorLangId == rest",
+          "group": "kulala@1"
+        },
+        {
+          "command": "kulala.copyAsCurl",
+          "when": "editorLangId == http || editorLangId == rest",
+          "group": "kulala@2"
+        }
+      ],
+      "editor/title/run": [
+        {
+          "command": "kulala.sendRequest",
+          "when": "editorLangId == http || editorLangId == rest",
+          "group": "navigation@1"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "kulala.sendRequest",
+          "when": "editorLangId == http || editorLangId == rest"
+        },
+        {
+          "command": "kulala.sendAllRequests",
+          "when": "editorLangId == http || editorLangId == rest"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "Kulala",
+      "properties": {
+        "kulala.corePath": {
+          "type": "string",
+          "default": "",
+          "description": "Path to the kulala-core executable. When empty, Kulala downloads kulala-core from GitHub releases."
+        },
+        "kulala.coreVersion": {
+          "type": "string",
+          "default": "0.24.3",
+          "description": "kulala-core release version to download when corePath is not set."
+        },
+        "kulala.dataDir": {
+          "type": "string",
+          "default": "",
+          "description": "Override KULALA_CORE_DATA_DIR (cookies, OAuth, globals persistence)."
+        },
+        "kulala.timeout": {
+          "type": "number",
+          "default": 60000,
+          "description": "kulala-core subprocess timeout in milliseconds."
+        },
+        "kulala.defaultEnv": {
+          "type": "string",
+          "default": "default",
+          "description": "Default environment name for http-client.env.json / kuba."
+        },
+        "kulala.downloadUrl": {
+          "type": "string",
+          "default": "https://github.com/mistweaverco/kulala-core/releases/download/%s/%s",
+          "description": "URL template for kulala-core downloads (%s = tag, %s = asset filename)."
+        },
+        "kulala.responseView": {
+          "type": "string",
+          "enum": [
+            "beside",
+            "below",
+            "active"
+          ],
+          "default": "beside",
+          "description": "Where to open the response panel."
+        },
+        "kulala.enableLsp": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable kulala-core LSP features (completion, hover, diagnostics, document symbols)."
+        },
+        "kulala.enableDiagnostics": {
+          "type": "boolean",
+          "default": true,
+          "description": "Show kulala-core parse diagnostics in .http / .rest files."
+        },
+        "kulala.enableCompletion": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable kulala-core completion (including inside {% %} scripts)."
+        },
+        "kulala.enforceExternalScriptNamingConvention": {
+          "type": "boolean",
+          "default": true,
+          "description": "Only attach Kulala LSP to script files named *.http.js, *.http.ts, or *.http.lua (matches kulala.nvim)."
+        },
+        "kulala.syntaxHighlighting": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use the kulala_http tree-sitter grammar (github.com/mistweaverco/tree-sitter-kulala-http) for semantic highlighting in .http files."
+        }
+      }
+    },
+    "configurationDefaults": {
+      "[http]": {
+        "editor.semanticHighlighting.enabled": true
+      },
+      "[rest]": {
+        "editor.semanticHighlighting.enabled": true
+      },
+      "files.associations": {
+        "*.http.js": "javascript",
+        "*.http.ts": "typescript",
+        "*.http.lua": "lua"
+      }
+    },
+    "languages": [
+      {
+        "id": "http",
+        "aliases": [
+          "HTTP",
+          "REST"
+        ],
+        "extensions": [
+          ".http",
+          ".rest"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./images/logo.png",
+          "dark": "./images/logo.png"
+        }
+      }
+    ]
+  },
+  "activationEvents": [
+    "onLanguage:http",
+    "onLanguage:javascript",
+    "onLanguage:lua",
+    "onLanguage:rest",
+    "onLanguage:typescript"
+  ],
+  "icon": "images/icon.png",
+  "engines": {
+    "vscode": "^1.120.0"
+  },
+  "packageManager": "pnpm@11.8.0"
+}

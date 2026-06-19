@@ -30,3 +30,4 @@ cp README.md README.md.bak
 sed -i 's/\.svg/\.png/g' README.md
 
 vsce package --out kulala.vsix
+npx ovsx publish

@@ -209,7 +209,9 @@ export class KulalaCoreBridge {
     }
     try {
       const catalog = JSON.parse(raw) as KulalaEnvironmentCatalog;
-      if (catalog?.environments) return { catalog };
+      if (catalog?.environments && typeof catalog.environments === "object") {
+        return { catalog };
+      }
     } catch {
       /* ignore */
     }

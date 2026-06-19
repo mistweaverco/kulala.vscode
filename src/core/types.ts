@@ -69,7 +69,8 @@ export type KulalaResponseWrapper = {
 };
 
 export type KulalaEnvironmentCatalog = {
-  environments: Array<{ name: string; source?: string }>;
+  $kulalaShared?: Record<string, unknown>;
+  environments: Record<string, Record<string, unknown>>;
 };
 
 export type KulalaDocument = {

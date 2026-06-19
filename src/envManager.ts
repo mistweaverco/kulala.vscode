@@ -8,7 +8,8 @@ export async function pickEnvironment(
   cwd: string,
 ): Promise<void> {
   const { catalog, err } = await bridge.listEnvironments(cwd);
-  if (err || !catalog?.environments?.length) {
+  const envNames = Object.keys(catalog?.environments ?? {}).sort((a, b) => a.localeCompare(b));
+  if (err || envNames.length === 0) {
     void vscode.window.showErrorMessage(err ?? "No environments found.");
     return;
   }
@@ -16,10 +17,9 @@ export async function pickEnvironment(
   const folder = vscode.workspace.workspaceFolders?.find((f) => cwd.startsWith(f.uri.fsPath));
   const current = getSelectedEnv(context, folder);
   const picked = await vscode.window.showQuickPick(
-    catalog.environments.map((e) => ({
-      label: e.name,
-      description: e.source,
-      picked: e.name === current,
+    envNames.map((name) => ({
+      label: name,
+      picked: name === current,
     })),
     { title: "Kulala environment", placeHolder: `Current: ${current}` },
   );

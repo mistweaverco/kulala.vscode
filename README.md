@@ -31,7 +31,6 @@ Kulala is swahili for "rest" or "relax."
 
 ---
 
-
 </div>
 
 ## Features
@@ -76,31 +75,30 @@ Kulala for Visual Studio Code uses
 **kulala-core** for editor intelligence
 (not a separate language-server binary):
 
-
-| Feature | `.http` / `.rest` | `*.http.js` / `*.http.ts` / `*.http.lua` | Inside `{% %}` scripts |
-| - | - | - | - |
-| Completion | ✓ | ✓ (script API) | ✓ (script API + variables) |
-| Hover | ✓ (resolved request / GraphQL) | ✓ (script API) | ✓ (script API)             |
-| Diagnostics | ✓ (parse errors) | - | - |
-| Document symbols | ✓ (request names) | - | - |
+| Feature          | `.http` / `.rest`              | `*.http.js` / `*.http.ts` / `*.http.lua` | Inside `{% %}` scripts     |
+| ---------------- | ------------------------------ | ---------------------------------------- | -------------------------- |
+| Completion       | ✓                              | ✓ (script API)                           | ✓ (script API + variables) |
+| Hover            | ✓ (resolved request / GraphQL) | ✓ (script API)                           | ✓ (script API)             |
+| Diagnostics      | ✓ (parse errors)               | -                                        | -                          |
+| Document symbols | ✓ (request names)              | -                                        | -                          |
 
 External script files must be named `something.http.ts` (etc.) when `kulala.enforceExternalScriptNamingConvention` is true (default), matching Neovim.
 
 ## Configuration
 
-| Setting | Default | Description |
-| - | - | - |
-| `kulala.corePath` | _(empty)_ | Path to `kulala-core` binary; skips auto-download when set |
-| `kulala.coreVersion` | `[current version]` | Release version to download |
-| `kulala.dataDir` | _(platform default)_ | `KULALA_CORE_DATA_DIR` for cookies, OAuth, globals |
-| `kulala.defaultEnv` | `default` | Default environment name |
-| `kulala.timeout` | `60000` | Subprocess timeout (ms) |
-| `kulala.responseView` | `beside` | Response panel: `beside`, `below`, or `active` |
-| `kulala.enableLsp`  | `true` | kulala-core completion, hover, diagnostics, symbols |
-| `kulala.enableDiagnostics` | `true` | Parse diagnostics in `.http` / `.rest` |
-| `kulala.enableCompletion` | `true` | Completion in HTTP files and `{% %}` scripts |
-| `kulala.enforceExternalScriptNamingConvention` | `true`               | LSP on `*.http.js` / `*.http.ts` / `*.http.lua` only |
-| `kulala.syntaxHighlighting` | `true` | Tree-sitter semantic highlighting for `.http` / `.rest` |
+| Setting                                        | Default              | Description                                                |
+| ---------------------------------------------- | -------------------- | ---------------------------------------------------------- |
+| `kulala.corePath`                              | _(empty)_            | Path to `kulala-core` binary; skips auto-download when set |
+| `kulala.coreVersion`                           | `[current version]`  | Release version to download                                |
+| `kulala.dataDir`                               | _(platform default)_ | `KULALA_CORE_DATA_DIR` for cookies, OAuth, globals         |
+| `kulala.defaultEnv`                            | `default`            | Default environment name                                   |
+| `kulala.timeout`                               | `60000`              | Subprocess timeout (ms)                                    |
+| `kulala.responseView`                          | `beside`             | Response panel: `beside`, `below`, or `active`             |
+| `kulala.enableLsp`                             | `true`               | kulala-core completion, hover, diagnostics, symbols        |
+| `kulala.enableDiagnostics`                     | `true`               | Parse diagnostics in `.http` / `.rest`                     |
+| `kulala.enableCompletion`                      | `true`               | Completion in HTTP files and `{% %}` scripts               |
+| `kulala.enforceExternalScriptNamingConvention` | `true`               | LSP on `*.http.js` / `*.http.ts` / `*.http.lua` only       |
+| `kulala.syntaxHighlighting`                    | `true`               | Tree-sitter semantic highlighting for `.http` / `.rest`    |
 
 ### Syntax highlighting
 
@@ -130,14 +128,14 @@ pnpm run build:syntax
 
 Optional environment variables:
 
-| Variable | Default | Purpose |
-| - | - | - |
-| `KULALA_HTTP_GRAMMAR_REPO` | `https://github.com/mistweaverco/tree-sitter-kulala-http.git` | Host grammar clone URL |
-| `KULALA_HTTP_GRAMMAR_REF` | `main` | Host grammar branch or tag |
-| `KULALA_HTTP_GRAMMAR_DIR` | `.cache/tree-sitter-kulala-http` | Host grammar cache |
-| `KULALA_GRAPHQL_GRAMMAR_REPO` | `https://github.com/joowani/tree-sitter-graphql.git` | GraphQL grammar (npm package does not ship wasm) |
-| `KULALA_LUA_GRAMMAR_REPO` | `https://github.com/tree-sitter-grammars/tree-sitter-lua.git` | Lua wasm + highlights (must match) |
-| `KULALA_XML_GRAMMAR_REPO` | `https://github.com/tree-sitter-grammars/tree-sitter-xml.git` | XML grammar (build in `xml/` subdir) |
+| Variable                      | Default                                                       | Purpose                                          |
+| ----------------------------- | ------------------------------------------------------------- | ------------------------------------------------ |
+| `KULALA_HTTP_GRAMMAR_REPO`    | `https://github.com/mistweaverco/tree-sitter-kulala-http.git` | Host grammar clone URL                           |
+| `KULALA_HTTP_GRAMMAR_REF`     | `main`                                                        | Host grammar branch or tag                       |
+| `KULALA_HTTP_GRAMMAR_DIR`     | `.cache/tree-sitter-kulala-http`                              | Host grammar cache                               |
+| `KULALA_GRAPHQL_GRAMMAR_REPO` | `https://github.com/joowani/tree-sitter-graphql.git`          | GraphQL grammar (npm package does not ship wasm) |
+| `KULALA_LUA_GRAMMAR_REPO`     | `https://github.com/tree-sitter-grammars/tree-sitter-lua.git` | Lua wasm + highlights (must match)               |
+| `KULALA_XML_GRAMMAR_REPO`     | `https://github.com/tree-sitter-grammars/tree-sitter-xml.git` | XML grammar (build in `xml/` subdir)             |
 
 ## Example
 
@@ -163,8 +161,6 @@ or you can point `kulala.corePath` at your own build.
 ## License
 
 MIT
-
-
 
 [badge-discord]: https://mistweaverco.com/assets/badges/discord.svg
 [discord]: https://mistweaverco.com/discord

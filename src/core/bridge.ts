@@ -138,11 +138,11 @@ export class KulalaCoreBridge {
     err?: string;
   } {
     const wrapper = KulalaCoreBridge.tryDecodeWrapper(job.stdout);
-    const first = wrapper?.data?.[0];
     const isPrompt =
       wrapper?.type === "responses" &&
-      first &&
-      (first.prompt === true || (first.promptId && first.promptType));
+      (wrapper.data ?? []).some(
+        (item) => item.prompt === true || Boolean(item.promptId && item.promptType),
+      );
 
     if (job.code !== 0 && !isPrompt) {
       const err = job.stderr.trim() || `kulala-core failed (exit ${job.code})`;

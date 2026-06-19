@@ -84,7 +84,7 @@ function buildPanelTitle(item: KulalaRequestResult, error?: string): string {
   return name ? `${prefix} ${name} · ${summary}` : `${prefix} ${summary}`;
 }
 
-function panelIconPath(context: vscode.ExtensionContext): vscode.IconPath {
+function panelIconPath(context: vscode.ExtensionContext): { light: vscode.Uri; dark: vscode.Uri } {
   const logo = vscode.Uri.joinPath(context.extensionUri, "images", "logo.png");
   return { light: logo, dark: logo };
 }

@@ -1,7 +1,7 @@
 {
   "name": "kulala",
   "displayName": "Kulala",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "description": "REST client for VS Code powered by kulala-core (.http files, environments, scripts)",
   "categories": [
     "Other"
@@ -175,7 +175,7 @@
         },
         "kulala.coreVersion": {
           "type": "string",
-          "default": "0.24.3",
+          "default": "0.24.4",
           "description": "kulala-core release version to download when corePath is not set."
         },
         "kulala.dataDir": {

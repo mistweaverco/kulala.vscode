@@ -7,10 +7,29 @@ import { formatBodyDisplay } from "./response/body";
 import { ResponsePanel } from "./response/panel";
 import { WebSocketSession } from "./websocket/session";
 
+const MAX_PROMPT_DEPTH = 7;
+
 function isPrompt(item: KulalaRequestResult | undefined): boolean {
   if (!item) return false;
   if (item.prompt === true) return true;
   return Boolean(item.promptId && item.promptType);
+}
+
+function findFirstPrompt(data: KulalaRequestResult[]): KulalaRequestResult | undefined {
+  return data.find((item) => isPrompt(item));
+}
+
+function completedBeforePrompt(data: KulalaRequestResult[]): KulalaRequestResult[] {
+  const promptIndex = data.findIndex((item) => isPrompt(item));
+  if (promptIndex <= 0) {
+    return [];
+  }
+  return data.slice(0, promptIndex);
+}
+
+function promptBlockName(item: KulalaRequestResult): string | undefined {
+  const name = item.blockName?.trim();
+  return name || undefined;
 }
 
 async function collectPromptInputs(
@@ -172,7 +191,7 @@ export class RequestRunner {
     limit: KulalaRunLimit[] | undefined,
     depth: number,
   ): Promise<void> {
-    if (depth > 6) {
+    if (depth > MAX_PROMPT_DEPTH) {
       void vscode.window.showErrorMessage("Kulala: exceeded prompt / retry limit.");
       return;
     }
@@ -196,30 +215,31 @@ export class RequestRunner {
     }
 
     const data = wrapper?.data ?? [];
-    const first = data[0];
-    if (!first) {
+    if (data.length === 0) {
       void vscode.window.showErrorMessage("Kulala: no result from kulala-core.");
       return;
     }
 
-    if (isPrompt(first)) {
-      if (first.message) {
-        void vscode.window.showInformationMessage(first.message);
+    const promptItem = findFirstPrompt(data);
+    if (promptItem) {
+      const completedBefore = completedBeforePrompt(data);
+      for (const item of completedBefore) {
+        await this.deliverItem(item, ctx);
       }
-      const inputs = await collectPromptInputs(first);
-      if (!inputs || !first.promptId) {
+
+      const inputs = await collectPromptInputs(promptItem);
+      if (!inputs || !promptItem.promptId) {
         void vscode.window.showWarningMessage("Prompt cancelled or incomplete.");
         return;
       }
-      const cont = await this.bridge.continue(first.promptId, inputs, ctx.cwd);
+
+      const cont = await this.bridge.continue(promptItem.promptId, inputs, ctx.cwd);
       if (cont.err) {
         this.panel.show(ResponsePanel.fromResult({ success: false, error: cont.err }));
         return;
       }
+
       const contFirst = cont.wrapper?.data?.[0];
-      if (contFirst?.message) {
-        void vscode.window.showInformationMessage(contFirst.message);
-      }
       if (!contFirst?.success) {
         this.panel.show(
           ResponsePanel.fromResult({
@@ -229,19 +249,28 @@ export class RequestRunner {
         );
         return;
       }
-      return this.runWithRetry(ctx, env, limit, depth + 1);
+
+      const blockName = promptBlockName(promptItem);
+      const retryLimit: KulalaRunLimit[] | undefined =
+        completedBefore.length > 0 && blockName ? [{ filter: "name", name: blockName }] : limit;
+
+      return this.runWithRetry(ctx, env, retryLimit, depth + 1);
     }
 
     for (const item of data) {
-      if (item.skipped && item.success) {
-        continue;
-      }
-      if (item.protocol === "websocket") {
-        await this.startWebSocket(item, ctx);
-        continue;
-      }
-      this.panel.show(ResponsePanel.fromResult(item));
+      await this.deliverItem(item, ctx);
     }
+  }
+
+  private async deliverItem(item: KulalaRequestResult, ctx: DocumentContext): Promise<void> {
+    if (item.skipped && item.success) {
+      return;
+    }
+    if (item.protocol === "websocket") {
+      await this.startWebSocket(item, ctx);
+      return;
+    }
+    this.panel.show(ResponsePanel.fromResult(item));
   }
 
   private async startWebSocket(item: KulalaRequestResult, ctx: DocumentContext): Promise<void> {

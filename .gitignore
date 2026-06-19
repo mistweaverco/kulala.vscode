@@ -4,6 +4,8 @@ dist/
 *.vsix
 .vscode-test/
 .DS_Store
+.env*
+!.envrc
 *.wasm
 node_modules.tmp/
 .pnpm-debug.log

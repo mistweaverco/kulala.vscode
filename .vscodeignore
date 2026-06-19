@@ -4,6 +4,8 @@ src/**
 scripts/**
 esbuild.mjs
 pnpm-lock.yaml
+.pnpm-store/**
+.vite-hooks/**
 pnpm-workspace.yaml
 *.tgz
 *.zip
@@ -12,7 +14,6 @@ tsconfig.json
 .jj/**
 **/*.ts
 .cache/
-assets/
 node_modules.tmp/
 node_modules/
 !node_modules/web-tree-sitter

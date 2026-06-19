@@ -1,6 +1,6 @@
 <div align="center">
 
-![Kulala Logo](images/logo.png)
+![Kulala Logo](images/logo.svg)
 
 # kulala.vscode
 
@@ -62,8 +62,8 @@ Install **Kulala** (`mistweaverco.kulala`) from the VS Code Marketplace.
 
 ```bash
 cd kulala.vscode
-npm install
-npm run build
+pnpm install
+pnpm run build
 ```
 
 Press **F5** in VS Code to launch an Extension Development Host.

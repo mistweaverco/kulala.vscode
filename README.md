@@ -9,6 +9,8 @@
 [![Development status][badge-development-status]][development-status]
 [![Our manifesto][badge-our-manifesto]][our-manifesto]
 [![AI Policty][badge-ai-policy]][ai-policy]
+[![Kulala on the Visual Code Marketplace][badge-vscode-market]][vscode-market]
+[![Kulala on the Open VSX Registry][badge-openvsx]][openvsx]
 
 A fully-featured 🤏 HTTP/GraphQL/gRPC/Websocket-client 🐼
 interface 🖥️ for (Visual Studio) Code ❤️,
@@ -181,3 +183,7 @@ MIT
 [badge-our-manifesto]: https://mistweaverco.com/assets/badges/our-manifesto.svg
 [our-manifesto]: https://mistweaverco.com/manifesto
 [kulala-tree-sitter]: https://github.com/mistweaverco/tree-sitter-kulala-http
+[badge-vscode-market]: https://mistweaverco.com/assets/badges/vscode-market.svg
+[vscode-market]: https://marketplace.visualstudio.com/items?itemName=mistweaverco.kulala
+[badge-openvsx]: https://mistweaverco.com/assets/badges/openvsx.svg
+[openvsx]: https://open-vsx.org/extension/mistweaverco/kulala

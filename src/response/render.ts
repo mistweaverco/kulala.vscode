@@ -22,7 +22,8 @@ const CLIENT_SCRIPT = `
   const data = window.__KULALA__;
   if (!data || !data.entries || !data.entries.length) return;
 
-  let index = typeof saved?.index === "number" ? saved.index : data.index;
+  // The extension owns the active history index
+  let index = typeof data.index === "number" ? data.index : 0;
   let tab = saved?.tab || data.tab || "body";
   index = Math.max(0, Math.min(index, data.entries.length - 1));
 

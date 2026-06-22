@@ -1,6 +1,8 @@
 node_modules/
 .cache/
 dist/
+.svelte-kit/
+webview/.svelte-kit/
 *.vsix
 .vscode-test/
 .DS_Store

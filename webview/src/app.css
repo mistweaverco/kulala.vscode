@@ -1,0 +1,330 @@
+@import "tailwindcss";
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--vscode-editor-background);
+  color: var(--vscode-foreground);
+  font-family: var(--vscode-font-family);
+  font-size: var(--vscode-font-size);
+}
+
+@layer components {
+  .kulala-root {
+    @apply flex h-screen overflow-hidden;
+  }
+
+  .kulala-sidebar {
+    @apply flex w-56 min-w-56 flex-col border-r;
+    border-color: var(--vscode-panel-border);
+    background: var(--vscode-sideBar-background, var(--vscode-editor-background));
+  }
+
+  .kulala-sidebar-head {
+    @apply flex items-center justify-between gap-2 border-b px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-wider opacity-70;
+    border-color: var(--vscode-panel-border);
+  }
+
+  .kulala-icon-btn {
+    @apply inline-flex shrink-0 cursor-pointer items-center justify-center rounded border-none bg-transparent p-0.5 opacity-70;
+    color: inherit;
+  }
+
+  .kulala-icon-btn:hover:not(:disabled) {
+    @apply opacity-100;
+    background: var(--vscode-toolbar-hoverBackground);
+  }
+
+  .kulala-icon-btn:disabled {
+    @apply cursor-default opacity-25;
+  }
+
+  .kulala-hidden {
+    display: none !important;
+  }
+
+  .kulala-empty-main {
+    @apply flex flex-1 flex-col items-center justify-center gap-1.5 p-8 text-center opacity-75;
+  }
+
+  .history-item {
+    @apply mb-0.5 flex w-full cursor-pointer flex-col items-start rounded-md border-none bg-transparent px-2.5 py-2 text-left;
+    color: inherit;
+  }
+
+  .history-item:hover {
+    background: var(--vscode-list-hoverBackground);
+  }
+
+  .history-item.active {
+    background: var(--vscode-list-activeSelectionBackground);
+    color: var(--vscode-list-activeSelectionForeground, inherit);
+  }
+
+  .history-item-title {
+    @apply max-w-full truncate text-[0.8rem] font-semibold;
+  }
+
+  .history-item-sub {
+    @apply max-w-full truncate text-[0.7rem] opacity-75;
+  }
+
+  .kulala-main {
+    @apply flex min-w-0 flex-1 flex-col overflow-hidden;
+  }
+
+  .kulala-main-stack {
+    @apply flex min-h-0 flex-1 flex-col overflow-hidden;
+  }
+
+  .kulala-toolbar {
+    @apply flex flex-wrap items-center gap-2 border-b px-4 py-3;
+    border-color: var(--vscode-panel-border);
+  }
+
+  .kulala-toolbar-grow {
+    @apply min-w-0 flex-1;
+  }
+
+  .entry-title {
+    @apply text-base font-semibold;
+  }
+
+  .entry-meta {
+    @apply truncate text-[0.8rem] opacity-85;
+  }
+
+  .kulala-action-bar {
+    @apply flex flex-wrap items-center gap-2 border-b px-4 py-2;
+    border-color: var(--vscode-panel-border);
+  }
+
+  .kulala-input {
+    @apply min-w-32 flex-1 rounded border px-2 py-1.5;
+    font-family: var(--vscode-editor-font-family);
+    font-size: var(--vscode-editor-font-size);
+    background: var(--vscode-input-background);
+    color: var(--vscode-input-foreground);
+    border-color: var(--vscode-input-border, var(--vscode-panel-border));
+  }
+
+  .kulala-btn {
+    @apply inline-flex cursor-pointer items-center justify-center rounded border border-transparent px-3 py-1.5 text-sm;
+    background: var(--vscode-button-secondaryBackground);
+    color: var(--vscode-button-secondaryForeground);
+  }
+
+  .kulala-btn:hover:not(:disabled) {
+    background: var(--vscode-button-secondaryHoverBackground);
+  }
+
+  .kulala-btn:disabled {
+    @apply cursor-default opacity-50;
+  }
+
+  .kulala-btn-sm {
+    @apply px-2 py-1 text-xs;
+  }
+
+  .kulala-btn-ghost {
+    background: transparent;
+    color: inherit;
+  }
+
+  .kulala-btn-ghost:hover:not(:disabled) {
+    background: var(--vscode-toolbar-hoverBackground);
+  }
+
+  .kulala-btn-primary {
+    background: var(--vscode-button-background);
+    color: var(--vscode-button-foreground);
+  }
+
+  .kulala-btn-primary:hover:not(:disabled) {
+    background: var(--vscode-button-hoverBackground);
+  }
+
+  .kulala-badge {
+    @apply inline-flex items-center rounded px-2 py-0.5 font-mono text-sm tabular-nums;
+    background: var(--vscode-badge-background);
+    color: var(--vscode-badge-foreground);
+  }
+
+  .kulala-badge-lg {
+    @apply px-3 py-1 text-base;
+  }
+
+  .kulala-badge-success {
+    color: var(--vscode-testing-iconPassed, #73c991);
+    background: color-mix(in srgb, var(--vscode-testing-iconPassed, #73c991) 18%, transparent);
+  }
+
+  .kulala-badge-info {
+    color: var(--vscode-charts-blue, #3794ff);
+    background: color-mix(in srgb, var(--vscode-charts-blue, #3794ff) 18%, transparent);
+  }
+
+  .kulala-badge-warning {
+    color: var(--vscode-editorWarning-foreground, #cca700);
+    background: color-mix(
+      in srgb,
+      var(--vscode-editorWarning-foreground, #cca700) 18%,
+      transparent
+    );
+  }
+
+  .kulala-badge-error {
+    color: var(--vscode-testing-iconFailed, #f48771);
+    background: color-mix(in srgb, var(--vscode-testing-iconFailed, #f48771) 18%, transparent);
+  }
+
+  .kulala-badge-ghost {
+    @apply opacity-80;
+    background: var(--vscode-input-background);
+  }
+
+  .kulala-tabs {
+    @apply flex gap-1 border-b px-4;
+    border-color: var(--vscode-panel-border);
+  }
+
+  .kulala-tab {
+    @apply cursor-pointer border-b-2 border-transparent px-3 py-2 text-sm opacity-75;
+    color: var(--vscode-foreground);
+    background: transparent;
+  }
+
+  .kulala-tab[data-active] {
+    @apply opacity-100;
+    border-color: var(--vscode-focusBorder);
+  }
+
+  .kulala-panes {
+    @apply relative flex min-h-0 flex-1 flex-col overflow-auto;
+  }
+
+  .kulala-pane {
+    @apply min-h-0 flex-1 overflow-auto;
+  }
+
+  .kulala-pane-hidden {
+    display: none !important;
+  }
+
+  .kulala-body-text,
+  .kulala-body-json .kulala-json {
+    @apply overflow-x-auto whitespace-pre;
+    font-family: var(--vscode-editor-font-family);
+    font-size: var(--vscode-editor-font-size);
+    line-height: 1.45;
+    tab-size: 2;
+  }
+
+  .kulala-body-json .kulala-json {
+    @apply block;
+  }
+
+  .kulala-body-image {
+    @apply flex items-start justify-center p-4;
+  }
+
+  .kulala-image-preview {
+    @apply max-h-[70vh] max-w-full rounded border object-contain;
+    border-color: var(--vscode-panel-border);
+  }
+
+  .json-key {
+    color: var(--vscode-symbolIcon-propertyForeground, #9cdcfe);
+  }
+
+  .json-string {
+    color: var(--vscode-debugTokenExpression-string, #ce9178);
+  }
+
+  .json-number {
+    color: var(--vscode-debugTokenExpression-number, #b5cea8);
+  }
+
+  .json-literal {
+    color: var(--vscode-debugTokenExpression-boolean, #569cd6);
+  }
+
+  .json-punctuation {
+    color: var(--vscode-editor-foreground);
+    opacity: 0.85;
+  }
+
+  .kulala-table {
+    @apply w-full text-left text-xs;
+  }
+
+  .kulala-table th,
+  .kulala-table td {
+    @apply border-b px-4 py-2;
+    border-color: var(--vscode-panel-border);
+  }
+
+  .kulala-table tbody tr:nth-child(even) {
+    background: color-mix(in srgb, var(--vscode-foreground) 4%, transparent);
+  }
+
+  .kulala-test-group {
+    @apply mb-2;
+  }
+
+  .kulala-test-head {
+    @apply text-[0.9rem] font-semibold;
+  }
+
+  .kulala-test-assert {
+    @apply break-words pl-1 font-mono text-[0.85rem] whitespace-pre-wrap;
+    font-family: var(--vscode-editor-font-family);
+  }
+
+  .text-success {
+    color: var(--vscode-testing-iconPassed, #73c991);
+  }
+
+  .text-error {
+    color: var(--vscode-testing-iconFailed, #f48771);
+  }
+
+  .text-warning {
+    color: var(--vscode-editorWarning-foreground, #cca700);
+  }
+
+  .text-info {
+    color: var(--vscode-charts-blue, #3794ff);
+  }
+
+  .kulala-progress {
+    @apply h-1.5 w-full overflow-hidden rounded;
+    background: var(--vscode-input-background);
+  }
+
+  .kulala-progress > div {
+    @apply h-full rounded;
+    background: var(--vscode-progressBar-background, var(--vscode-focusBorder));
+  }
+
+  .kulala-verbose {
+    @apply flex flex-col gap-6 p-4;
+  }
+
+  .kulala-verbose-section {
+    @apply flex flex-col gap-2;
+  }
+
+  .kulala-verbose-title {
+    @apply m-0 text-xs font-semibold uppercase tracking-wider opacity-70;
+  }
+
+  .kulala-verbose-empty {
+    @apply m-0 text-sm opacity-60;
+  }
+
+  .kulala-verbose-body {
+    @apply m-0;
+  }
+}

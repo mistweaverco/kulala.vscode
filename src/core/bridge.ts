@@ -310,12 +310,27 @@ export class KulalaCoreBridge {
   ): Promise<string | undefined> {
     const job = await this.invoke({ action: "to_curl", content, filepath, line, column }, cwd);
     const raw = job.stdout.trim();
-    return raw || undefined;
+    if (!raw) return undefined;
+    try {
+      const result = JSON.parse(raw) as { ok?: boolean; curl?: string };
+      if (result.ok && typeof result.curl === "string") return result.curl;
+    } catch {
+      return raw;
+    }
+    return undefined;
   }
 
   async fromCurl(curl: string, cwd?: string): Promise<string | undefined> {
     const job = await this.invoke({ action: "from_curl", curl }, cwd);
-    return job.stdout.trim() || undefined;
+    const raw = job.stdout.trim();
+    if (!raw) return undefined;
+    try {
+      const result = JSON.parse(raw) as { ok?: boolean; lines?: string[] };
+      if (result.ok && Array.isArray(result.lines)) return result.lines.join("\n");
+    } catch {
+      return raw;
+    }
+    return undefined;
   }
 
   async inspectRequest(
@@ -330,7 +345,15 @@ export class KulalaCoreBridge {
       { action: "inspect_request", content, filepath, line, column, env },
       cwd,
     );
-    return job.stdout.trim() || undefined;
+    const raw = job.stdout.trim();
+    if (!raw) return undefined;
+    try {
+      const result = JSON.parse(raw) as { ok?: boolean; lines?: string[] };
+      if (result.ok && Array.isArray(result.lines)) return result.lines.join("\n");
+    } catch {
+      return raw;
+    }
+    return undefined;
   }
 
   async clearGlobals(cwd?: string): Promise<void> {

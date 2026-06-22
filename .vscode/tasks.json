@@ -6,10 +6,25 @@
       "script": "watch",
       "problemMatcher": "$esbuild-watch",
       "isBackground": true,
+      "group": "build",
+      "label": "watch: extension"
+    },
+    {
+      "type": "npm",
+      "script": "watch:webview",
+      "problemMatcher": "$tsc-watch",
+      "isBackground": true,
+      "group": "build",
+      "label": "watch: webview"
+    },
+    {
+      "dependsOn": ["watch: extension", "watch: webview"],
       "group": {
         "kind": "build",
         "isDefault": true
-      }
+      },
+      "label": "watch: all",
+      "problemMatcher": []
     }
   ]
 }

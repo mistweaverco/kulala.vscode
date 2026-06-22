@@ -1,8 +1,8 @@
 {
   "name": "kulala",
   "displayName": "Kulala",
-  "version": "0.1.7",
-  "description": "REST client for VS Code powered by kulala-core (.http files, environments, scripts)",
+  "version": "0.2.0",
+  "description": "A fully-featured HTTP/GraphQL/gRPC/Websocket-client interface for (Visual Studio) Code, that supports the Jetbrains .http spec (with full scripting support).",
   "categories": [
     "Other"
   ],
@@ -25,23 +25,35 @@
   "publisher": "mistweaverco",
   "main": "./dist/extension.js",
   "scripts": {
-    "build:syntax": "./scripts/build-syntax.sh",
     "build": "./scripts/package.sh",
-    "watch": "node esbuild.mjs --watch",
-    "lint": "tsc --noEmit",
+    "build:ext": "node esbuild.mjs",
+    "build:syntax": "./scripts/build-syntax.sh",
+    "build:webview": "pnpm --dir webview exec vp build",
+    "fmt": "vp fmt",
+    "format": "vp fmt",
+    "lint": "tsc --noEmit && vp check",
     "package": "./scripts/package.sh",
-    "prepare": "vp config"
+    "prepare": "vp config",
+    "watch": "node esbuild.mjs --watch",
+    "watch:webview": "pnpm --dir webview exec vp build --watch"
   },
   "dependencies": {
     "web-tree-sitter": "0.25.10"
   },
   "devDependencies": {
+    "@sveltejs/adapter-static": "3.0.10",
+    "@sveltejs/kit": "2.50.2",
+    "@sveltejs/vite-plugin-svelte": "5.1.1",
+    "@tailwindcss/vite": "4.1.18",
     "@types/node": "22.19.19",
     "@types/vscode": "1.102.0",
     "@vscode/vsce": "3.9.1",
-    "daisyui": "4.12.24",
     "esbuild": "0.25.12",
+    "melt": "0.44.0",
     "ovsx": "1.0.1",
+    "svelte": "5.56.3",
+    "svelte-check": "4.4.2",
+    "tailwindcss": "4.1.18",
     "tree-sitter-javascript": "0.25.0",
     "tree-sitter-json": "0.24.8",
     "tree-sitter-typescript": "0.23.2",

@@ -1,4 +1,5 @@
 import * as vscode from "vscode";
+import type { ResponseViewState, TabId } from "../../shared/response-view";
 import { responseViewColumn } from "../config";
 import type { KulalaRequestResult } from "../core/types";
 import {
@@ -19,42 +20,13 @@ import {
   timingRows,
   totalDurationMs,
 } from "./format";
-import { renderResponseWebview, type TabId } from "./render";
-import { testGroupViews, type TestGroupView } from "./tests";
+import { postWebviewState, renderResponseWebview, webviewDistUri } from "./webview-html";
+import { testGroupViews } from "./tests";
+import { emptyVerbose, verboseResponseBodyFromEntry, verboseView } from "./verbose";
+
+export type { ResponseViewState, TabId };
 
 const MAX_HISTORY = 100;
-
-export type ResponseViewState = {
-  id: string;
-  at: number;
-  title: string;
-  blockName?: string;
-  status: number | string;
-  statusBadgeClass: string;
-  url?: string;
-  method?: string;
-  durationMs?: number;
-  durationLabel?: string;
-  error?: string;
-  body: string;
-  bodyKind: BodyKind;
-  bodyHtml?: string;
-  bodyImageSrc?: string;
-  binaryNote?: string;
-  headers: string;
-  headersRows: Array<{ name: string; value: string }>;
-  stats: string;
-  timingRows: Array<{ phase: string; ms: number }>;
-  console: string;
-  consoleLines: Array<{ level: string; message: string; levelClass: string }>;
-  testGroups: TestGroupView[];
-  jqFilter?: string;
-  rawBody?: string;
-  contentType?: string;
-  isWebSocket?: boolean;
-  wsConnected?: boolean;
-  wsClosed?: boolean;
-};
 
 export type PanelHandlers = {
   onApplyJqFilter?: (filter: string, entryId: string) => void;
@@ -89,11 +61,11 @@ function panelIconPath(context: vscode.ExtensionContext): { light: vscode.Uri; d
   return { light: logo, dark: logo };
 }
 
-function daisyTheme(): string {
+function vscodeTheme(): "light" | "dark" {
   const kind = vscode.window.activeColorTheme.kind;
   return kind === vscode.ColorThemeKind.Light || kind === vscode.ColorThemeKind.HighContrastLight
-    ? "corporate"
-    : "dim";
+    ? "light"
+    : "dark";
 }
 
 function newEntryId(): string {
@@ -105,7 +77,7 @@ function bodyFieldsFromDisplay(
 ): Pick<ResponseViewState, "body" | "bodyKind" | "bodyHtml" | "bodyImageSrc" | "binaryNote"> {
   return {
     body: display.text,
-    bodyKind: display.kind,
+    bodyKind: display.kind as BodyKind,
     bodyHtml: display.html,
     bodyImageSrc: display.imageSrc,
     binaryNote: display.binaryNote,
@@ -126,6 +98,7 @@ export class ResponsePanel {
   private historyIndex = -1;
   private activeTab: TabId = "body";
   private handlers: PanelHandlers = {};
+  private webviewHtmlReady = false;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -143,11 +116,21 @@ export class ResponsePanel {
   updateEntry(id: string, patch: Partial<ResponseViewState>): void {
     const idx = this.history.findIndex((e) => e.id === id);
     if (idx < 0) return;
-    const next = { ...this.history[idx], ...patch };
-    this.history[idx] = next;
+    const current = this.history[idx];
+    const merged = { ...current, ...patch };
+    if (
+      current.isWebSocket &&
+      (patch.body !== undefined || patch.bodyKind !== undefined || patch.bodyHtml !== undefined)
+    ) {
+      merged.verbose = {
+        ...merged.verbose,
+        responseBody: verboseResponseBodyFromEntry(merged),
+      };
+    }
+    this.history[idx] = merged;
     if (this.historyIndex === idx) {
-      this.last = next;
-      this.panel!.title = next.title;
+      this.last = merged;
+      this.panel!.title = merged.title;
     }
     this.updateWebview();
   }
@@ -208,6 +191,7 @@ export class ResponsePanel {
       console: "",
       consoleLines: [],
       testGroups: [],
+      verbose: emptyVerbose,
     };
   }
 
@@ -266,6 +250,7 @@ export class ResponsePanel {
       isWebSocket: item.protocol === "websocket",
       wsConnected: false,
       wsClosed: false,
+      verbose: verboseView(item),
       ...overrides,
     };
   }
@@ -278,6 +263,25 @@ export class ResponsePanel {
     this.historyIndex = this.history.length - 1;
   }
 
+  private buildPayload(): {
+    theme: "light" | "dark";
+    entries: ResponseViewState[];
+    index: number;
+    tab: TabId;
+  } {
+    const index =
+      this.history.length === 0
+        ? 0
+        : Math.max(0, Math.min(this.historyIndex, this.history.length - 1));
+    this.historyIndex = index;
+    return {
+      theme: vscodeTheme(),
+      entries: this.history,
+      index,
+      tab: this.activeTab,
+    };
+  }
+
   private ensurePanel(): void {
     if (this.panel) {
       this.panel.reveal(responseViewColumn());
@@ -288,11 +292,16 @@ export class ResponsePanel {
       "kulalaResponse",
       "Kulala Response",
       responseViewColumn(),
-      { enableScripts: true, retainContextWhenHidden: true },
+      {
+        enableScripts: true,
+        retainContextWhenHidden: true,
+        localResourceRoots: [webviewDistUri(this.context.extensionUri)],
+      },
     );
     this.panel.iconPath = panelIconPath(this.context);
     this.panel.onDidDispose(() => {
       this.panel = undefined;
+      this.webviewHtmlReady = false;
     });
     this.panel.webview.onDidReceiveMessage(
       (msg: {
@@ -309,6 +318,10 @@ export class ResponsePanel {
             this.last = entry;
             this.panel!.title = entry.title;
           }
+          return;
+        }
+        if (msg.type === "clearHistory") {
+          this.clearHistory();
           return;
         }
         const entry = msg.entryId
@@ -333,25 +346,24 @@ export class ResponsePanel {
   }
 
   private updateWebview(): void {
-    if (!this.panel || this.history.length === 0) return;
+    if (!this.panel) return;
 
-    const index = Math.max(0, Math.min(this.historyIndex, this.history.length - 1));
-    this.historyIndex = index;
-    const entry = this.history[index];
-    this.panel.title = entry.title;
+    const payload = this.buildPayload();
     const webview = this.panel.webview;
-    const stylesheet = webview.asWebviewUri(
-      vscode.Uri.joinPath(this.context.extensionUri, "dist", "media", "daisyui.css"),
-    );
-    this.panel.webview.html = renderResponseWebview({
-      payload: {
-        theme: daisyTheme(),
-        entries: this.history,
-        index,
-        tab: this.activeTab,
-      },
-      stylesheetHref: stylesheet.toString(),
-      styleCspSource: webview.cspSource,
-    });
+
+    if (this.history.length === 0) {
+      this.panel.title = "Kulala Response";
+    } else {
+      const entry = this.history[payload.index];
+      if (entry) this.panel.title = entry.title;
+    }
+
+    if (!this.webviewHtmlReady) {
+      this.panel.webview.html = renderResponseWebview(this.context.extensionUri, webview, payload);
+      this.webviewHtmlReady = true;
+      return;
+    }
+
+    postWebviewState(webview, payload);
   }
 }

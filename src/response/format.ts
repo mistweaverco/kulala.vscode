@@ -43,15 +43,15 @@ export function statusBadge(status: number | string | undefined): StatusBadge {
 export function badgeClass(badge: StatusBadge): string {
   switch (badge) {
     case "success":
-      return "badge-success";
+      return "kulala-badge-success";
     case "info":
-      return "badge-info";
+      return "kulala-badge-info";
     case "warning":
-      return "badge-warning";
+      return "kulala-badge-warning";
     case "error":
-      return "badge-error";
+      return "kulala-badge-error";
     default:
-      return "badge-ghost";
+      return "kulala-badge-ghost";
   }
 }
 

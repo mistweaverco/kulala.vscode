@@ -8,7 +8,9 @@ rm -rf ./dist
 function cleanup {
   rm -rf ./node_modules
   pnpm install
-  mv README.md.bak README.md || true
+  if [[ -f README.md.bak ]]; then
+    mv README.md.bak README.md || true
+  fi
 }
 
 trap cleanup EXIT
@@ -16,6 +18,7 @@ trap cleanup EXIT
 ./scripts/build-syntax.sh
 
 node esbuild.mjs
+pnpm build:webview
 
 rm -rf ./.cache/web-tree-sitter
 cp --recursive --dereference ./node_modules/web-tree-sitter ./.cache/web-tree-sitter

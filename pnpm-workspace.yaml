@@ -12,6 +12,7 @@ catalog:
   vite-plus: ^0.2.1
 minimumReleaseAgeExclude:
   - '@sveltejs/kit@2.67.0'
+  - cookie@0.7.0
 overrides:
   vite: "catalog:"
   vitest: "catalog:"

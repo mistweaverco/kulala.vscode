@@ -2,10 +2,8 @@ import * as fs from "node:fs";
 import * as vscode from "vscode";
 import type { WebviewPayload } from "../../shared/response-view";
 
-const WEBVIEW_DIR = ["dist", "webview"] as const;
-
 export function webviewDistUri(extensionUri: vscode.Uri): vscode.Uri {
-  return vscode.Uri.joinPath(extensionUri, ...WEBVIEW_DIR);
+  return vscode.Uri.joinPath(extensionUri, "dist", "webview");
 }
 
 function webviewBaseHref(webview: vscode.Webview, base: vscode.Uri): string {
@@ -13,11 +11,19 @@ function webviewBaseHref(webview: vscode.Webview, base: vscode.Uri): string {
   return href.endsWith("/") ? href : `${href}/`;
 }
 
-/** Root-relative SvelteKit assets must be relative for the webview <base> tag. */
-function useRelativeAssets(html: string): string {
-  return html
-    .replace(/(["'])\/_app\//g, "$1./_app/")
-    .replace(/base:\s*new URL\(['"]\.['"],\s*location\)\.pathname\.slice\(0,\s*-1\)/g, 'base: ""');
+/** SvelteKit emits root-absolute /_app/ URLs; rewrite to webview-accessible URIs. */
+function rewriteWebviewAssets(html: string, webview: vscode.Webview, base: vscode.Uri): string {
+  const withAssets = html.replace(
+    /(["'])\/_app\/([^"']+)/g,
+    (_match, quote: string, path: string) => {
+      const assetUri = vscode.Uri.joinPath(base, "_app", ...path.split("/"));
+      return `${quote}${webview.asWebviewUri(assetUri)}`;
+    },
+  );
+  return withAssets.replace(
+    /base:\s*new URL\(['"]\.['"],\s*location\)\.pathname\.slice\(0,\s*-1\)/g,
+    'base: ""',
+  );
 }
 
 function injectHeadExtras(
@@ -41,7 +47,7 @@ function injectHeadExtras(
     `<script>if (!location.hash || location.hash === "#") location.hash = "#/";</script>`,
     `<script>window.__KULALA__=${json};</script>`,
   ].join("\n");
-  return html.replace("</head>", `${injection}\n</head>`);
+  return html.replace("<head>", `<head>\n${injection}`);
 }
 
 export function renderResponseWebview(
@@ -52,7 +58,7 @@ export function renderResponseWebview(
   const base = webviewDistUri(extensionUri);
   const indexPath = vscode.Uri.joinPath(base, "index.html");
   let html = fs.readFileSync(indexPath.fsPath, "utf8");
-  html = useRelativeAssets(html);
+  html = rewriteWebviewAssets(html, webview, base);
   html = injectHeadExtras(html, payload, webview, base, webview.cspSource);
   return html;
 }

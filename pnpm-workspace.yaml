@@ -11,7 +11,7 @@ catalog:
   vitest: npm:@voidzero-dev/vite-plus-test@latest
   vite-plus: ^0.2.1
 minimumReleaseAgeExclude:
-  - '@sveltejs/kit@2.67.0'
+  - "@sveltejs/kit@2.67.0"
   - cookie@0.7.0
 overrides:
   vite: "catalog:"

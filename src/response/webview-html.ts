@@ -17,7 +17,8 @@ function rewriteWebviewAssets(html: string, webview: vscode.Webview, base: vscod
     /(["'])\/_app\/([^"']+)/g,
     (_match, quote: string, path: string) => {
       const assetUri = vscode.Uri.joinPath(base, "_app", ...path.split("/"));
-      return `${quote}${webview.asWebviewUri(assetUri)}`;
+      const webviewUri = webview.asWebviewUri(assetUri);
+      return `${quote}${webviewUri.toString()}`;
     },
   );
   return withAssets.replace(

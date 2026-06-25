@@ -31,7 +31,7 @@
     "build:webview": "pnpm --dir webview exec vp build",
     "fmt": "vp fmt",
     "format": "vp fmt",
-    "lint": "tsc --noEmit && vp check",
+    "lint": "pnpm --dir webview exec svelte-kit sync && pnpm --dir . exec vp check",
     "package": "./scripts/package.sh",
     "prepare": "vp config",
     "watch": "node esbuild.mjs --watch",

@@ -16,6 +16,7 @@ tsconfig.json
 .jj/**
 **/*.ts
 .cache/
+.env*
 node_modules.tmp/
 node_modules/
 !node_modules/web-tree-sitter

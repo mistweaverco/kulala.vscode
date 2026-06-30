@@ -1,11 +1,7 @@
 import * as vscode from "vscode";
 import { getConfig } from "../config";
 import type { KulalaCoreBridge } from "../core/bridge";
-import {
-  completionReplaceRange,
-  isEmptyReplaceRange,
-  toVsCodeCompletionItem,
-} from "../lsp/completion";
+import { toVsCodeCompletionItem } from "../lsp/completion";
 import { lspContext, supportsKulalaLsp } from "../lsp/context";
 
 export class KulalaCompletionProvider implements vscode.CompletionItemProvider {
@@ -32,8 +28,6 @@ export class KulalaCompletionProvider implements vscode.CompletionItemProvider {
       filetype: ctx.filetype,
     });
 
-    const replaceRange = completionReplaceRange(line, position);
-    const omitRange = isEmptyReplaceRange(replaceRange);
-    return items.map((item) => toVsCodeCompletionItem(item, replaceRange, omitRange));
+    return items.map((item) => toVsCodeCompletionItem(item, line, position));
   }
 }

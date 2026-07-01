@@ -12,7 +12,7 @@
 [![Kulala on the Visual Code Marketplace][badge-vscode-market]][vscode-market]
 [![Kulala on the Open VSX Registry][badge-openvsx]][openvsx]
 
-A fully-featured 🤏 HTTP/GraphQL/gRPC/Websocket-client 🐼
+A fully-featured ⚡️ HTTP/GraphQL/gRPC/Websocket-client 🐼
 interface 🖥️ for (Visual Studio) Code ❤️,
 that supports the Jetbrains .http spec (with full scripting support).
 

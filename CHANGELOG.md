@@ -1,6 +1,12 @@
+## 0.5.0 (2026-07-01)
+
+* feat(changelog): add changelog generation script ([016184b](https://github.com/mistweaverco/kulala/commit/016184b))
+* feat(env): add support for ws (withsecrets.com) ([dfa10ae](https://github.com/mistweaverco/kulala/commit/dfa10ae))
+* feat(lsp): add more operators to lsp completion ([834f181](https://github.com/mistweaverco/kulala/commit/834f181))
+* fix(lint): ignore changelog ([aea9b3e](https://github.com/mistweaverco/kulala/commit/aea9b3e))
+
 ## <small>0.4.3 (2026-07-01)</small>
 
-* feat(env): add support for ws (withsecrets.com) ([dfa10ae](https://github.com/mistweaverco/kulala/commit/dfa10ae))
 * fix(curl): omit content-type header if not set by user ([ff23ddf](https://github.com/mistweaverco/kulala/commit/ff23ddf))
 
 ## <small>0.4.2 (2026-06-30)</small>

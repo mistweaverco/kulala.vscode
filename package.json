@@ -189,7 +189,7 @@
         },
         "kulala.coreVersion": {
           "type": "string",
-          "default": "0.27.0",
+          "default": "0.28.0",
           "description": "kulala-core release version to download when corePath is not set."
         },
         "kulala.dataDir": {

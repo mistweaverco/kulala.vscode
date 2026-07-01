@@ -1,3 +1,9 @@
+.node-version
+.oxfmtrc.json
+.oxlintrc.json
+mise.toml
+.github/**
+README.md.bak
 .vscode/**
 .vscode-test/**
 src/**

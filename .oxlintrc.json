@@ -5,6 +5,7 @@
     "correctness": "error"
   },
   "rules": {},
+  "ignorePatterns": ["CHANGELOG.md", "dist/**", ".svelte-kit/**", "webview/.svelte-kit/**"],
   "env": {
     "builtin": true
   }

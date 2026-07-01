@@ -32,7 +32,7 @@
     "changelog": "./scripts/generate-changelog.sh",
     "fmt": "vp fmt",
     "format": "vp fmt",
-    "lint": "pnpm --dir webview exec svelte-kit sync && pnpm --dir . exec vp check",
+    "lint": "pnpm --dir webview exec svelte-kit sync && vp lint",
     "package": "./scripts/package.sh",
     "prepare": "vp config",
     "watch": "node esbuild.mjs --watch",

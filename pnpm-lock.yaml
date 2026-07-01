@@ -43,6 +43,9 @@ importers:
       '@vscode/vsce':
         specifier: 3.9.2
         version: 3.9.2
+      conventional-changelog:
+        specifier: 8.0.0
+        version: 8.0.0(conventional-commits-filter@6.0.0)
       esbuild:
         specifier: 0.28.1
         version: 0.28.1
@@ -143,6 +146,22 @@ packages:
 
   '@blazediff/core@1.9.1':
     resolution: {integrity: sha512-ehg3jIkYKulZh+8om/O25vkvSsXXwC+skXmyA87FFx6A/45eqOkZsBltMw/TVteb0mloiGT8oGRTcjRAz66zaA==}
+
+  '@conventional-changelog/git-client@3.0.1':
+    resolution: {integrity: sha512-5gW6MaxbrErdhK2YopOY6EXU7iyuE0132wK4h/6a6n1iqML9G063hU3ixOAMb7CEGDkcqVrgrRRbK16QtMpdEg==}
+    engines: {node: '>=22'}
+    peerDependencies:
+      conventional-commits-filter: ^6.0.0
+      conventional-commits-parser: ^7.0.0
+    peerDependenciesMeta:
+      conventional-commits-filter:
+        optional: true
+      conventional-commits-parser:
+        optional: true
+
+  '@conventional-changelog/template@1.2.0':
+    resolution: {integrity: sha512-12qHxvlKjHmP0PQ+17EREgC7lWyLwbph1RKcZQZ7k7ZWGmrxfxC9gadHGfvzr0g0u8BhiBGg3tks93txodlyRQ==}
+    engines: {node: '>=22'}
 
   '@emnapi/core@1.11.1':
     resolution: {integrity: sha512-RSvbQmHzdKzNsLYa/wHrbc3KN4sYLKAdPZxqiM2HATqv/SBk2/ENSHpvXGaLOMcsAyz0poEGqkmmKYG3OWiJEQ==}
@@ -1078,6 +1097,22 @@ packages:
     resolution: {integrity: sha512-Nqc90v4lWCXyakD6xNyNACBJNJ0tNCwj2WNk/7ivyacYHxiITVgmLUFXTBOeCdy79iz6HtN9Y31uw/jbLrdOAg==}
     engines: {node: '>=20.0.0'}
 
+  '@simple-libs/child-process-utils@2.0.0':
+    resolution: {integrity: sha512-dvNoRKLijXnD0XoJAz94pbNuB5GQgDr55UhpSPhffDkTT0Cmcqh9jSCOtwfT2d4H6MI9E7c4SgtMuJXZ6F3c6A==}
+    engines: {node: '>=22'}
+
+  '@simple-libs/hosted-git-info@2.0.0':
+    resolution: {integrity: sha512-55XwK/GYgV58PuN8lZFhI1qRxdKoMLJocXl/yM1EPqazFDmM4QWY7q6BxPCPDNKTNunj794DSD4h0H7SrqUdMg==}
+    engines: {node: '>=22'}
+
+  '@simple-libs/normalize-package-data@1.0.0':
+    resolution: {integrity: sha512-/EOmFBekV9tGee8gac/k+5Ox3twkypNqh5TfxA9vTkmcJkjm6f1xqrlstDNOrEhTvnYyVtU6Du2ZhY/IV1+9GA==}
+    engines: {node: '>=22'}
+
+  '@simple-libs/stream-utils@2.0.0':
+    resolution: {integrity: sha512-fCTuZK4QBa+39Oz9l4OGfJfz+GpwCp3AqO7Zch3to99xHPgstVsRFpeQ8LNd2o1Gv8raL2mCFwiaHh7bFSp5DQ==}
+    engines: {node: '>=22'}
+
   '@sinclair/typebox@0.27.10':
     resolution: {integrity: sha512-MTBk/3jGLNB2tVxv6uLlFh1iu64iYOQ2PbdOSK3NW8JZsmlaOh2q6sdtKowBhfw8QFLmYNzTW4/oK4uATIi6ZA==}
 
@@ -1751,6 +1786,29 @@ packages:
     resolution: {integrity: sha512-U7VdrJFnJgo4xjrHpTzu0yrHPGImdsmD95ZlgYSEajAn2JKzDhDTPG9kBTefmObL2w/ngeZnilk+OV9CG3d7UA==}
     engines: {node: '>= 6'}
 
+  conventional-changelog-preset-loader@6.0.0:
+    resolution: {integrity: sha512-3riLntQf3x7tBqFJZIW5zvfRBuABhBvbU+6SdbFVhslgzkC5NEdEDSnxpCysTsHQrfrkJV/5a6E3B1sDffdbzg==}
+    engines: {node: '>=22'}
+
+  conventional-changelog-writer@9.1.0:
+    resolution: {integrity: sha512-m3eMC0wT6gecDZCS1txbDCNurmAlLQdGyi7Os+n/sKiC1T4U/K/VJH530DCNyWwq60bUaeiPPxwtA1hMR+Pqbg==}
+    engines: {node: '>=22'}
+    hasBin: true
+
+  conventional-changelog@8.0.0:
+    resolution: {integrity: sha512-vUS+Zyk+bioH71dSikZ1RbgFt3KaDcRoaxdPtv5+PNcuqEfqGuK6yVte6AuopjEAVMz8P5lhoTsFYMmHTu0jTA==}
+    engines: {node: '>=22'}
+    hasBin: true
+
+  conventional-commits-filter@6.0.0:
+    resolution: {integrity: sha512-taSykxCRrEryH1oTkqUa6bvIgSPWG7BRs4mwuwQR68099xRQCTBIIbu9vs6xHO2YW4iKuB4GIfAZVQW5BLYG6Q==}
+    engines: {node: '>=22'}
+
+  conventional-commits-parser@7.0.0:
+    resolution: {integrity: sha512-dZe/p+FgGQLNJFqaCgNdl8j6a7gI8xuaN30Wy5g7nvyK3jqOpNUEUZ3pGJ5D68h89uRh038FtkeOk/bnGmYkmg==}
+    engines: {node: '>=22'}
+    hasBin: true
+
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
 
@@ -1940,6 +1998,9 @@ packages:
 
   fastq@1.20.1:
     resolution: {integrity: sha512-GGToxJ/w1x32s/D2EKND7kTil4n8OVk/9mycTc4VDza13lOvpUZTGX3mFSCtV9ksdGBVzvsyAVLM6mHFThxXxw==}
+
+  fd-package-json@2.0.0:
+    resolution: {integrity: sha512-jKmm9YtsNXN789RS/0mSzOC1NUq9mkVd65vbSSVsKdjGvYXBuE4oWe2QOEoFeRmJg+lPuZxpmrfFclNhoRMneQ==}
 
   fdir@6.5.0:
     resolution: {integrity: sha512-tIbYtZbucOs0BRGqPJkshJUYdL+SDH7dVM8gjy+ERp3WAUjLEFJE+02kanyHtwjWOnwrKYBiwAmM0p4kLJAnXg==}
@@ -2329,6 +2390,10 @@ packages:
     peerDependencies:
       '@floating-ui/dom': ^1.6.0
       svelte: ^5.30.1
+
+  meow@14.1.0:
+    resolution: {integrity: sha512-EDYo6VlmtnumlcBCbh1gLJ//9jvM/ndXHfVXIFrZVr6fGcwTUyCTFNTLCKuY3ffbK8L/+3Mzqnd58RojiZqHVw==}
+    engines: {node: '>=20'}
 
   merge2@1.4.1:
     resolution: {integrity: sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg==}
@@ -2963,6 +3028,10 @@ packages:
       vite:
         optional: true
 
+  walk-up-path@4.0.0:
+    resolution: {integrity: sha512-3hu+tD8YzSLGuFYtPRb48vdhKMi0KQV5sn+uWr8+7dMEq/2G/dtLrdDinkLjqq5TIbIBjYJ4Ax/n3YiaW7QM8A==}
+    engines: {node: 20 || >=22}
+
   web-tree-sitter@0.25.10:
     resolution: {integrity: sha512-Y09sF44/13XvgVKgO2cNDw5rGk6s26MgoZPXLESvMXeefBf7i6/73eFurre0IsTW6E14Y0ArIzhUMmjoc7xyzA==}
     peerDependencies:
@@ -3125,6 +3194,17 @@ snapshots:
   '@babel/runtime@7.29.7': {}
 
   '@blazediff/core@1.9.1': {}
+
+  '@conventional-changelog/git-client@3.0.1(conventional-commits-filter@6.0.0)(conventional-commits-parser@7.0.0)':
+    dependencies:
+      '@simple-libs/child-process-utils': 2.0.0
+      '@simple-libs/stream-utils': 2.0.0
+      semver: 7.8.5
+    optionalDependencies:
+      conventional-commits-filter: 6.0.0
+      conventional-commits-parser: 7.0.0
+
+  '@conventional-changelog/template@1.2.0': {}
 
   '@emnapi/core@1.11.1':
     dependencies:
@@ -3704,6 +3784,19 @@ snapshots:
       istextorbinary: 9.5.0
 
   '@secretlint/types@10.2.2': {}
+
+  '@simple-libs/child-process-utils@2.0.0':
+    dependencies:
+      '@simple-libs/stream-utils': 2.0.0
+
+  '@simple-libs/hosted-git-info@2.0.0': {}
+
+  '@simple-libs/normalize-package-data@1.0.0':
+    dependencies:
+      '@simple-libs/hosted-git-info': 2.0.0
+      semver: 7.8.5
+
+  '@simple-libs/stream-utils@2.0.0': {}
 
   '@sinclair/typebox@0.27.10': {}
 
@@ -4294,6 +4387,36 @@ snapshots:
 
   commander@6.2.1: {}
 
+  conventional-changelog-preset-loader@6.0.0: {}
+
+  conventional-changelog-writer@9.1.0:
+    dependencies:
+      '@conventional-changelog/template': 1.2.0
+      '@simple-libs/stream-utils': 2.0.0
+      conventional-commits-filter: 6.0.0
+      meow: 14.1.0
+      semver: 7.8.5
+
+  conventional-changelog@8.0.0(conventional-commits-filter@6.0.0):
+    dependencies:
+      '@conventional-changelog/git-client': 3.0.1(conventional-commits-filter@6.0.0)(conventional-commits-parser@7.0.0)
+      '@simple-libs/hosted-git-info': 2.0.0
+      '@simple-libs/normalize-package-data': 1.0.0
+      conventional-changelog-preset-loader: 6.0.0
+      conventional-changelog-writer: 9.1.0
+      conventional-commits-parser: 7.0.0
+      fd-package-json: 2.0.0
+      meow: 14.1.0
+    transitivePeerDependencies:
+      - conventional-commits-filter
+
+  conventional-commits-filter@6.0.0: {}
+
+  conventional-commits-parser@7.0.0:
+    dependencies:
+      '@simple-libs/stream-utils': 2.0.0
+      meow: 14.1.0
+
   convert-source-map@2.0.0: {}
 
   cookie@0.6.0: {}
@@ -4515,6 +4638,10 @@ snapshots:
   fastq@1.20.1:
     dependencies:
       reusify: 1.1.0
+
+  fd-package-json@2.0.0:
+    dependencies:
+      walk-up-path: 4.0.0
 
   fdir@6.5.0(picomatch@4.0.4):
     optionalDependencies:
@@ -4888,6 +5015,8 @@ snapshots:
       jest-axe: 9.0.0
       runed: 0.23.4(svelte@5.56.3)
       svelte: 5.56.3
+
+  meow@14.1.0: {}
 
   merge2@1.4.1: {}
 
@@ -5613,6 +5742,8 @@ snapshots:
   vitefu@1.1.3(vite@6.4.3(@types/node@26.0.0)(jiti@2.7.0)(lightningcss@1.32.0)):
     optionalDependencies:
       vite: 6.4.3(@types/node@26.0.0)(jiti@2.7.0)(lightningcss@1.32.0)
+
+  walk-up-path@4.0.0: {}
 
   web-tree-sitter@0.25.10: {}
 

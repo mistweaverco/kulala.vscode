@@ -3,8 +3,17 @@
 # Fetch latest version from git tags and strip the leading 'v' if present
 VERSION=${VERSION:-$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')}
 SOURCE_FILE="CHANGELOG.md"
+
+TEMP_CONTEXT=$(mktemp --suffix=".json")
+echo "{\"version\": \"$VERSION\", \"date\": \"$(date +%Y-%m-%d)\"}" > "$TEMP_CONTEXT"
+
 TEMP_CONFIG=$(mktemp --suffix=".json")
-echo "{\"version\": \"$VERSION\", \"date\": \"$(date +%Y-%m-%d)\"}" > "$TEMP_CONFIG"
+echo '{
+  "gitRawCommitsOpts": {
+    "grep": "^ignore-for-changelog:",
+    "invertGrep": true
+  }
+}' > "$TEMP_CONFIG"
 
 echo "Generating changelog for version: ${VERSION}"
 echo "Using PKG_VERSION: ${PKG_VERSION}"
@@ -30,13 +39,17 @@ if [[ -n "$should_workaround_detached_head" ]]; then
 fi
 
 ./node_modules/.bin/conventional-changelog \
+  -p conventionalcommits \
   -i "$SOURCE_FILE" \
   -s \
   -r 0 \
   -u \
-  -k "$TEMP_CONFIG" \
-  -c "$TEMP_CONFIG"
+  -k "$TEMP_CONTEXT" \
+  -c "$TEMP_CONTEXT" \
+  -n "$TEMP_CONFIG"
 
+# Cleanup both files
+rm "$TEMP_CONTEXT"
 rm "$TEMP_CONFIG"
 
 if [[ -n "$tag_was_deleted" ]]; then

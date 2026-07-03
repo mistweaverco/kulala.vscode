@@ -50,6 +50,7 @@
     "@types/vscode": "1.102.0",
     "@vscode/vsce": "3.9.2",
     "conventional-changelog": "8.0.0",
+    "conventional-changelog-conventionalcommits": "10.2.0",
     "esbuild": "0.28.1",
     "melt": "0.44.0",
     "ovsx": "1.0.1",

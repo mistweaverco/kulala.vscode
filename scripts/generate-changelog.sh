@@ -5,15 +5,12 @@ VERSION=${VERSION:-$(git describe --tags --abbrev=0 2>/dev/null | sed 's/^v//')}
 SOURCE_FILE="CHANGELOG.md"
 
 TEMP_CONTEXT=$(mktemp --suffix=".json")
-echo "{\"version\": \"$VERSION\", \"date\": \"$(date +%Y-%m-%d)\"}" > "$TEMP_CONTEXT"
-
-TEMP_CONFIG=$(mktemp --suffix=".json")
-echo '{
-  "gitRawCommitsOpts": {
-    "grep": "^ignore-for-changelog:",
-    "invertGrep": true
-  }
-}' > "$TEMP_CONFIG"
+cat <<EOF > "$TEMP_CONTEXT"
+{
+  "version": "$VERSION",
+  "date": "$(date +%Y-%m-%d)"
+}
+EOF
 
 echo "Generating changelog for version: ${VERSION}"
 echo "Using PKG_VERSION: ${PKG_VERSION}"
@@ -39,18 +36,15 @@ if [[ -n "$should_workaround_detached_head" ]]; then
 fi
 
 ./node_modules/.bin/conventional-changelog \
-  -p conventionalcommits \
   -i "$SOURCE_FILE" \
   -s \
   -r 0 \
   -u \
-  -k "$TEMP_CONTEXT" \
   -c "$TEMP_CONTEXT" \
-  -n "$TEMP_CONFIG"
+  -n ./.conventional-changelog.config.mjs
 
 # Cleanup both files
 rm "$TEMP_CONTEXT"
-rm "$TEMP_CONFIG"
 
 if [[ -n "$tag_was_deleted" ]]; then
   # Restore the tag to its original target (do not retag HEAD).

@@ -1,14 +1,11 @@
 import createPreset from "conventional-changelog-conventionalcommits";
 
-const REPO_HOST = "https://github.com";
-const REPO_OWNER = "mistweaverco";
-const REPO_NAME = "kulala.vscode";
-const REPO_URL = `${REPO_HOST}/${REPO_OWNER}/${REPO_NAME}`;
+const REPO_URL = "https://github.com/mistweaverco/kulala.nvim";
 
-const config = createPreset({
-  commitUrlFormat: `${REPO_URL}/commit/{{hash}}`,
-  compareUrlFormat: `${REPO_URL}/compare/{{previousTag}}...{{currentTag}}`,
+export default createPreset({
+  formatCommitUrl: (_context, commit) =>
+    `${REPO_URL}/commit/${commit.hash}`,
+  formatCompareUrl: (context) =>
+    `${REPO_URL}/compare/${context.previousTag}...${context.currentTag}`,
   ignoreCommits: /^skip-changelog\b/i,
 });
-
-export default config;

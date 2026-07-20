@@ -13,7 +13,6 @@ cat <<EOF > "$TEMP_CONTEXT"
 EOF
 
 echo "Generating changelog for version: ${VERSION}"
-echo "Using PKG_VERSION: ${PKG_VERSION}"
 
 should_workaround_detached_head=""
 if [[ -n "$CI" ]]; then

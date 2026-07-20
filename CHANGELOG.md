@@ -1,8 +1,18 @@
+## [0.6.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.6.0...v0.6.1) (2026-07-20)
+
+### Bug Fixes
+
+* **operators:** request operators should always have precendence ([8f4990b](https://github.com/mistweaverco/kulala.vscode/commit/8f4990b12d9e9af8f9a1fe330206b2e55e643fbc))
+
 ## [0.6.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.5.1...v0.6.0) (2026-07-07)
 
 ### Features
 
 * **treesitter:** update treesitter to support kulala-jq syntax ([f2b0082](https://github.com/mistweaverco/kulala.vscode/commit/f2b00826244fc220a3e9d19b637a33e0c6bc2e2f))
+
+### Bug Fixes
+
+* **scripts:** changelog generation script ([9d986a9](https://github.com/mistweaverco/kulala.vscode/commit/9d986a91fa1bf149557dea2bc3430abc31304db4))
 
 ## [0.5.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.5.0...v0.5.1) (2026-07-03)
 

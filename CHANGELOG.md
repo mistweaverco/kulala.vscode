@@ -1,8 +1,9 @@
-## [0.6.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.6.0...v0.6.1) (2026-07-20)
+## [0.6.2](https://github.com/mistweaverco/kulala.vscode/compare/v0.6.1...v0.6.2) (2026-07-21)
 
 ### Bug Fixes
 
-* **operators:** request operators should always have precendence ([8f4990b](https://github.com/mistweaverco/kulala.vscode/commit/8f4990b12d9e9af8f9a1fe330206b2e55e643fbc))
+* **graphql:** context with preambles ([46ef9ce](https://github.com/mistweaverco/kulala.vscode/commit/46ef9ce504c8f6e22449cb72c142d76dcc1de63b))
+* **operators:** request operators should always have precendence ([89bd0f9](https://github.com/mistweaverco/kulala.vscode/commit/89bd0f9603acee17a16fa11e0e75006a26a52c21))
 
 ## [0.6.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.5.1...v0.6.0) (2026-07-07)
 

@@ -1,4 +1,10 @@
-## [0.6.2](https://github.com/mistweaverco/kulala.vscode/compare/v0.6.1...v0.6.2) (2026-07-21)
+## [7.0.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.7.0...v7.0.1) (2026-07-24)
+
+## [0.7.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.6.2...v0.7.0) (2026-07-24)
+
+### Features
+
+* **ui:** tree-sitter fixes enhancements comments ([6343016](https://github.com/mistweaverco/kulala.vscode/commit/63430166537f0f57198ee21d321d1900442ec24f))
 
 ### Bug Fixes
 

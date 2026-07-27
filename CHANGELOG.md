@@ -1,4 +1,14 @@
-## [7.0.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.7.0...v7.0.1) (2026-07-24)
+## [0.8.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.7.1...v0.8.0) (2026-07-27)
+
+### Features
+
+* **websockets:** add sender/receiver to body view ([54a7391](https://github.com/mistweaverco/kulala.vscode/commit/54a7391070f0ad8ac63145710500a1c8113747ad))
+
+## [0.7.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.7.0...v0.7.1) (2026-07-24)
+
+### Bug Fixes
+
+* **docs:** update CHANGELOG.md ([e064a68](https://github.com/mistweaverco/kulala.vscode/commit/e064a68e5bca9bc3202d1ae6560e027851d1a0b8))
 
 ## [0.7.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.6.2...v0.7.0) (2026-07-24)
 

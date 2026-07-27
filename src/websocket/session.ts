@@ -8,6 +8,7 @@ import {
   buildWsJqSource,
   isEmptyJqDisplay,
   normalizeWsFilterForInput,
+  type WsStreamMessage,
 } from "./jq";
 
 export type WebSocketSessionState = {
@@ -25,7 +26,7 @@ type SessionCallbacks = {
 
 export class WebSocketSession {
   private handle: WebSocketSessionHandle | undefined;
-  private messages: string[] = [];
+  private messages: WsStreamMessage[] = [];
   private welcome = "";
   private filter: string | undefined;
   private connected = false;
@@ -68,7 +69,10 @@ export class WebSocketSession {
               "Press Kulala: Close WebSocket or cancel to disconnect.\n\n";
             this.refresh();
           } else if (ev.type === "message") {
-            this.messages.push(ev.data);
+            this.messages.push({ direction: "in", data: ev.data });
+            this.refresh();
+          } else if (ev.type === "sent") {
+            this.messages.push({ direction: "out", data: ev.data });
             this.refresh();
           } else if (ev.type === "error") {
             this.error = ev.error;

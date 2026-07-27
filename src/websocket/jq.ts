@@ -1,4 +1,10 @@
 /** WebSocket jq input is a JSON array of messages. Adapt filters accordingly. */
+export type WsStreamMessage = { direction: "in" | "out"; data: string };
+
+export function wsMessagePayloads(messages: WsStreamMessage[]): string[] {
+  return messages.map((m) => m.data);
+}
+
 export function adaptWsJqFilter(filter: string, bodyRaw: string): string {
   if (!filter || bodyRaw.trim().charAt(0) !== "[") return filter;
 
@@ -28,9 +34,9 @@ export function normalizeWsFilterForInput(filter: string, jqInput: string): stri
   return adaptWsJqFilter(filter, jqInput);
 }
 
-export function buildWsJqSource(messages: string[]): string {
+export function buildWsJqSource(messages: WsStreamMessage[]): string {
   const items: unknown[] = [];
-  for (const raw of messages) {
+  for (const { data: raw } of messages) {
     try {
       items.push(JSON.parse(raw));
     } catch {
@@ -41,11 +47,11 @@ export function buildWsJqSource(messages: string[]): string {
 }
 
 export function buildWsJqObjectSource(
-  messages: string[],
+  messages: WsStreamMessage[],
   initialMessage?: string,
 ): { input: string; hasObjects: boolean } {
   const objects: unknown[] = [];
-  for (const raw of messages) {
+  for (const { data: raw } of messages) {
     try {
       const parsed = JSON.parse(raw);
       if (parsed !== null && typeof parsed === "object" && !Array.isArray(parsed)) {
@@ -70,9 +76,11 @@ export function buildWsJqObjectSource(
   return { input: JSON.stringify(objects), hasObjects: true };
 }
 
-export function buildWsDisplayStream(messages: string[]): string {
+export function buildWsDisplayStream(messages: WsStreamMessage[]): string {
   if (!messages.length) return "";
-  return messages.map((raw) => `=> ${raw}`).join("\n");
+  return messages
+    .map(({ direction, data }) => `${direction === "in" ? "<--" : "-->"} ${data}`)
+    .join("\n");
 }
 
 export function isEmptyJqDisplay(text: string): boolean {

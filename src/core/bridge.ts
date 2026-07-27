@@ -28,6 +28,7 @@ export type WebSocketConnectOptions = {
 export type WebSocketEvent =
   | { type: "ready" }
   | { type: "message"; data: string }
+  | { type: "sent"; data: string }
   | { type: "error"; error: string }
   | { type: "closed"; code?: number };
 
@@ -432,6 +433,8 @@ export class KulalaCoreBridge {
           if (msg.type === "ready") handlers.onEvent({ type: "ready" });
           else if (msg.type === "message" && msg.data != null) {
             handlers.onEvent({ type: "message", data: msg.data });
+          } else if (msg.type === "sent" && msg.data != null) {
+            handlers.onEvent({ type: "sent", data: msg.data });
           } else if (msg.type === "error") {
             handlers.onEvent({ type: "error", error: msg.error ?? "WebSocket error" });
           } else if (msg.type === "closed") {

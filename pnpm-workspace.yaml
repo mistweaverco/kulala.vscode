@@ -16,7 +16,7 @@ minimumReleaseAgeExclude:
   - cookie@0.7.0
 overrides:
   vite: "catalog:"
-  vitest: "catalog:"
+  vitest: "npm:@voidzero-dev/vite-plus-test@0.1.24"
 peerDependencyRules:
   allowAny:
     - vite

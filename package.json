@@ -62,7 +62,8 @@
     "tree-sitter-json": "0.24.8",
     "tree-sitter-typescript": "0.23.2",
     "typescript": "6.0.3",
-    "vite-plus": "catalog:"
+    "vite-plus": "catalog:",
+    "vitest": "catalog:"
   },
   "contributes": {
     "commands": [

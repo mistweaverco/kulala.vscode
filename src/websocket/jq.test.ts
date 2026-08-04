@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, test } from "vite-plus/test";
 import { buildWsDisplayStream, buildWsJqSource } from "./jq";
 
 describe("buildWsDisplayStream", () => {
@@ -10,11 +10,7 @@ describe("buildWsDisplayStream", () => {
         { direction: "out", data: '{"foo": 1}' },
       ]),
     ).toBe(
-      [
-        "<-- Request served by 6e82931b755587",
-        '<-- {"name":"world"}',
-        '--> {"foo": 1}',
-      ].join("\n"),
+      ["<-- Request served by 6e82931b755587", '<-- {"name":"world"}', '--> {"foo": 1}'].join("\n"),
     );
   });
 });

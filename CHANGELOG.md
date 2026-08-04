@@ -1,8 +1,13 @@
-## [0.8.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.7.1...v0.8.0) (2026-07-27)
+## [0.8.2](https://github.com/mistweaverco/kulala.vscode/compare/v0.8.0...v0.8.2) (2026-08-04)
 
 ### Features
 
+* **scripts:** allow require/import of node packages in scripts ([8da721e](https://github.com/mistweaverco/kulala.vscode/commit/8da721e872814fb4b312fbedf28f0f0d6805e7ed))
 * **websockets:** add sender/receiver to body view ([54a7391](https://github.com/mistweaverco/kulala.vscode/commit/54a7391070f0ad8ac63145710500a1c8113747ad))
+
+### Bug Fixes
+
+* **tests:** fix websocket test to use correct testing framework ([e8f272f](https://github.com/mistweaverco/kulala.vscode/commit/e8f272fbc40dca14c37ad024cc32e76004d34469))
 
 ## [0.7.1](https://github.com/mistweaverco/kulala.vscode/compare/v0.7.0...v0.7.1) (2026-07-24)
 

@@ -49,6 +49,7 @@ export type KulalaRequestResult = {
   url?: string;
   error?: string;
   skipped?: boolean;
+  aborted?: boolean;
   httpCompleted?: boolean;
   protocol?: string;
   initialMessage?: string;

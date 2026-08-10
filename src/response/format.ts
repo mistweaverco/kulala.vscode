@@ -28,8 +28,8 @@ export function prettyMs(ms: number | undefined): string {
 export function statusBadge(status: number | string | undefined): StatusBadge {
   if (typeof status === "string") {
     const s = status.toLowerCase();
-    if (s === "error" || s === "failed") return "error";
-    if (s === "websocket") return "info";
+    if (s === "error" || s === "failed" || s === "aborted") return "error";
+    if (s === "websocket" || s === "skipped") return "info";
     return "neutral";
   }
   if (typeof status !== "number" || status <= 0) return "neutral";

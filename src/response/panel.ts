@@ -49,7 +49,11 @@ function buildPanelTitle(item: KulalaRequestResult, error?: string): string {
     ? "Error"
     : item.protocol === "websocket"
       ? "WebSocket"
-      : String(item.status ?? (item.success ? "OK" : "Failed"));
+      : item.skipped && item.success
+        ? "Skipped"
+        : item.aborted
+          ? "Aborted"
+          : String(item.status ?? (item.success ? "OK" : "Failed"));
   const summary = `${method} ${status}`;
   const name = displayBlockName(item.blockName);
   const prefix = "Kulala Result:";
@@ -205,16 +209,24 @@ export class ResponsePanel {
       ? "Error"
       : item.protocol === "websocket"
         ? "WebSocket"
-        : (item.status ?? (item.success ? "OK" : "Failed"));
+        : item.skipped && item.success
+          ? "Skipped"
+          : item.aborted
+            ? "Aborted"
+            : (item.status ?? (item.success ? "OK" : "Failed"));
     const blockName = displayBlockName(item.blockName);
     const badge = statusBadge(
       error
         ? "Error"
         : item.protocol === "websocket"
           ? "WebSocket"
-          : typeof status === "number"
-            ? status
-            : undefined,
+          : item.skipped && item.success
+            ? "Skipped"
+            : item.aborted
+              ? "Aborted"
+              : typeof status === "number"
+                ? status
+                : undefined,
     );
     const durationMs = totalDurationMs(item.timings);
     const rows = consoleRows(item);

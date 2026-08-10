@@ -270,9 +270,6 @@ export class RequestRunner {
   }
 
   private async deliverItem(item: KulalaRequestResult, ctx: DocumentContext): Promise<void> {
-    if (item.skipped && item.success) {
-      return;
-    }
     if (item.openapiUi && item.openapi) {
       const folder = ctx.filepath
         ? vscode.workspace.getWorkspaceFolder(vscode.Uri.file(ctx.filepath))

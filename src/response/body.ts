@@ -133,7 +133,26 @@ export function formatBodyDisplay(body: KulalaResponseBody | undefined): BodyDis
 }
 
 export function preferredResponseBody(item: KulalaRequestResult): KulalaResponseBody | undefined {
-  return item.filteredBody ?? item.body;
+  const preferred = item.filteredBody ?? item.body;
+  if (preferred) return preferred;
+
+  // Skip/abort (and other pre-HTTP failures): surface client.log in the body pane.
+  if (
+    (item.skipped && item.success) ||
+    item.aborted ||
+    (item.success === false && !item.httpCompleted && !item.prompt)
+  ) {
+    const logs = (item.scriptConsole ?? [])
+      .map((l) => l.message)
+      .filter((m) => typeof m === "string" && m.trim().length > 0)
+      .join("\n");
+    const footer =
+      item.skipped && item.success ? "Request skipped by script" : (item.error ?? "Request failed");
+    const content = logs.length > 0 ? `${logs}\n\n${footer}` : footer;
+    return { type: "text", content, mediaType: "text/plain" };
+  }
+
+  return undefined;
 }
 
 export function bodyText(body: KulalaResponseBody | undefined): string {

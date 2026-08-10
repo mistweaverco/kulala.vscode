@@ -1,8 +1,9 @@
-## [0.9.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.8.2...v0.9.0) (2026-08-10)
+## [0.10.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.9.0...v0.10.0) (2026-08-10)
 
 ### Features
 
 * **openapi,ui:** add openapi explorer + monaco editor for res ([32fa80e](https://github.com/mistweaverco/kulala.vscode/commit/32fa80e63bbde5459445621220fe326f1dae6be9))
+* **scripts:** add $kulala.request.abort() ([3cda9bf](https://github.com/mistweaverco/kulala.vscode/commit/3cda9bfd3a6a0b5aba48651816a895e57b874a76))
 
 ## [0.8.2](https://github.com/mistweaverco/kulala.vscode/compare/v0.8.0...v0.8.2) (2026-08-04)
 

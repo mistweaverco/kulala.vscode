@@ -1,1 +1,1 @@
-export const DEFAULT_CORE_VERSION = "0.31.1";
+export const DEFAULT_CORE_VERSION = "0.32.1";

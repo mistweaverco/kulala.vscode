@@ -12,6 +12,9 @@ import type {
   KulalaResponseWrapper,
   KulalaRunLimit,
   KulalaLspFiletype,
+  ClearOpenAPISchemaResult,
+  OpenAPILoadResult,
+  KulalaRequestResult,
   LspCompletionItem,
   LspCompletionList,
   LspDiagnostic,
@@ -31,6 +34,37 @@ export type WebSocketEvent =
   | { type: "sent"; data: string }
   | { type: "error"; error: string }
   | { type: "closed"; code?: number };
+
+/** Strip Bun/Node code frames so the response panel does not show bundled source. */
+export function summarizeCoreStderr(stderr: string): string {
+  const text = stderr.trim();
+  if (!text) return text;
+
+  const lines = text.split(/\r?\n/);
+  const useful: string[] = [];
+  for (const line of lines) {
+    // Bun/V8 code frames: `85793 | process.stdout.write...`
+    if (/^\s*\d+\s*\|/.test(line)) continue;
+    if (/^\s*\^+\s*$/.test(line)) continue;
+    if (/^\s*at\s+/.test(line)) continue;
+    if (/^Bun v\d/i.test(line.trim())) continue;
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    useful.push(trimmed);
+  }
+
+  // Prefer the actual exception line when present.
+  const exception = useful.find((l) =>
+    /^(?:Error|TypeError|SyntaxError|RangeError|URIError|ReferenceError)\b/.test(l),
+  );
+  if (exception) return exception;
+
+  if (useful.length > 0) {
+    return useful.slice(0, 4).join("\n");
+  }
+
+  return text.length > 400 ? `${text.slice(0, 400)}…` : text;
+}
 
 export type WebSocketSessionHandle = {
   send(data: string): void;
@@ -146,7 +180,7 @@ export class KulalaCoreBridge {
       );
 
     if (job.code !== 0 && !isPrompt) {
-      const err = job.stderr.trim() || `kulala-core failed (exit ${job.code})`;
+      const err = summarizeCoreStderr(job.stderr) || `kulala-core failed (exit ${job.code})`;
       return { err };
     }
     if (!wrapper) {
@@ -361,6 +395,113 @@ export class KulalaCoreBridge {
     await this.invoke({ action: "clear_globals" }, cwd);
   }
 
+  async openapiLoad(opts: {
+    content: string;
+    filepath?: string;
+    line: number;
+    column: number;
+    env?: string;
+    cwd?: string;
+  }): Promise<{ result?: OpenAPILoadResult; err?: string }> {
+    const job = await this.invoke(
+      {
+        action: "openapi_load",
+        content: opts.content,
+        filepath: opts.filepath,
+        line: opts.line,
+        column: opts.column,
+        env: opts.env ?? "default",
+      },
+      opts.cwd,
+    );
+    const raw = job.stdout.trim();
+    if (!raw) {
+      return { err: job.stderr.trim() || "kulala-core openapi_load failed" };
+    }
+    try {
+      const result = JSON.parse(raw) as OpenAPILoadResult & { type?: string };
+      if (result.ok === true && result.openapi) return { result };
+      if (result.ok === false) return { result };
+      return { err: "invalid kulala-core openapi_load output" };
+    } catch {
+      return { err: "invalid kulala-core openapi_load output" };
+    }
+  }
+
+  async openapiRunOperation(opts: {
+    content: string;
+    filepath?: string;
+    line: number;
+    column: number;
+    env?: string;
+    operationKey: string;
+    parameterOverrides?: Record<string, string>;
+    cwd?: string;
+  }): Promise<{ result?: KulalaRequestResult; err?: string }> {
+    const job = await this.invoke(
+      {
+        action: "openapi_run_operation",
+        content: opts.content,
+        filepath: opts.filepath,
+        line: opts.line,
+        column: opts.column,
+        env: opts.env ?? "default",
+        operationKey: opts.operationKey,
+        ...(opts.parameterOverrides && Object.keys(opts.parameterOverrides).length > 0
+          ? { parameterOverrides: opts.parameterOverrides }
+          : {}),
+      },
+      opts.cwd,
+    );
+    const raw = job.stdout.trim();
+    if (!raw) {
+      return { err: job.stderr.trim() || "kulala-core openapi_run_operation failed" };
+    }
+    try {
+      const parsed = JSON.parse(raw) as KulalaRequestResult | KulalaResponseWrapper;
+      if ("type" in parsed && parsed.type === "responses" && Array.isArray(parsed.data)) {
+        const first = parsed.data[0];
+        if (first) return { result: first };
+        return { err: "openapi_run_operation returned no results" };
+      }
+      if ("success" in parsed || "error" in parsed) {
+        return { result: parsed as KulalaRequestResult };
+      }
+      return { err: "invalid kulala-core openapi_run_operation output" };
+    } catch {
+      return { err: "invalid kulala-core openapi_run_operation output" };
+    }
+  }
+
+  async clearOpenapiSchema(
+    cacheKey?: string,
+    cwd?: string,
+  ): Promise<{ result?: ClearOpenAPISchemaResult; err?: string }> {
+    const job = await this.invoke(
+      {
+        action: "clear_openapi_schema",
+        ...(cacheKey ? { cacheKey } : {}),
+      },
+      cwd,
+    );
+    const raw = job.stdout.trim();
+    if (!raw) {
+      return { err: job.stderr.trim() || "kulala-core clear_openapi_schema failed" };
+    }
+    try {
+      const parsed = JSON.parse(raw) as ClearOpenAPISchemaResult & {
+        success?: boolean;
+        error?: string;
+      };
+      if (parsed.success === false || parsed.error) {
+        return { err: parsed.error ?? "clear_openapi_schema failed" };
+      }
+      return { result: { cleared: parsed.cleared ?? 0, keys: parsed.keys } };
+    } catch {
+      return { err: "invalid kulala-core clear_openapi_schema output" };
+    }
+  }
+
   async applyJqFilter(
     rawBody: string,
     filter: string,
@@ -448,7 +589,7 @@ export class KulalaCoreBridge {
 
     child.stdout.on("data", flushLines);
     child.stderr.on("data", (c: string) => {
-      const text = c.trim();
+      const text = summarizeCoreStderr(c);
       if (text) handlers.onEvent({ type: "error", error: text });
     });
 

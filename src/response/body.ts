@@ -31,7 +31,9 @@ function isImageMediaType(mediaType?: string): boolean {
   return Boolean(mediaType?.toLowerCase().startsWith("image/"));
 }
 
-/** Token-aware highlighter for pretty-printed JSON (2-space indent from kulala-core). */
+/** Token-aware highlighter for pretty-printed JSON (2-space indent from kulala-core).
+ * Kept for optional host-side use; the webview Body tab uses Monaco instead.
+ */
 export function highlightJson(json: string): string {
   const parts: string[] = [];
   let i = 0;
@@ -110,7 +112,7 @@ export function formatBodyDisplay(body: KulalaResponseBody | undefined): BodyDis
   }
   if (body.type === "json") {
     const text = body.formatted ?? JSON.stringify(body.content, null, 2);
-    return { kind: "json", text, html: highlightJson(text) };
+    return { kind: "json", text };
   }
   if (body.type === "binary") {
     const mediaType = body.mediaType ?? "application/octet-stream";

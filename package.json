@@ -1,7 +1,7 @@
 {
   "name": "kulala",
   "displayName": "Kulala",
-  "version": "0.8.2",
+  "version": "0.9.0",
   "description": "A fully-featured HTTP/GraphQL/gRPC/Websocket-client interface for (Visual Studio) Code, that supports the Jetbrains .http spec (with full scripting support).",
   "categories": [
     "Other"
@@ -53,6 +53,7 @@
     "conventional-changelog-conventionalcommits": "10.2.1",
     "esbuild": "0.28.1",
     "melt": "0.44.0",
+    "monaco-editor": "0.52.2",
     "ovsx": "1.1.0",
     "svelte": "5.56.8",
     "svelte-check": "4.7.4",
@@ -104,6 +105,14 @@
       {
         "command": "kulala.showResponse",
         "title": "Kulala: Show Last Response"
+      },
+      {
+        "command": "kulala.openOpenapiExplorer",
+        "title": "Kulala: Open OpenAPI Explorer"
+      },
+      {
+        "command": "kulala.clearOpenapiSchemaCache",
+        "title": "Kulala: Clear OpenAPI Schema Cache"
       },
       {
         "command": "kulala.applyJqFilter",
@@ -162,6 +171,11 @@
           "command": "kulala.copyAsCurl",
           "when": "editorLangId == http || editorLangId == rest",
           "group": "kulala@2"
+        },
+        {
+          "command": "kulala.openOpenapiExplorer",
+          "when": "editorLangId == http || editorLangId == rest",
+          "group": "kulala@3"
         }
       ],
       "editor/title/run": [
@@ -192,7 +206,7 @@
         },
         "kulala.coreVersion": {
           "type": "string",
-          "default": "0.31.1",
+          "default": "0.32.1",
           "description": "kulala-core release version to download when corePath is not set."
         },
         "kulala.dataDir": {

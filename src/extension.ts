@@ -11,6 +11,7 @@ import { KulalaCompletionProvider } from "./providers/completion";
 import { KulalaDiagnostics } from "./providers/diagnostics";
 import { KulalaDocumentSymbolProvider } from "./providers/documentSymbols";
 import { KulalaHoverProvider } from "./providers/hover";
+import { OpenAPIPanel } from "./openapi/panel";
 import { ResponsePanel } from "./response/panel";
 import { RequestRunner } from "./runner";
 import { KulalaStatusBar } from "./statusBar";
@@ -21,7 +22,8 @@ const httpSelector: vscode.DocumentSelector = [{ language: "http" }, { language:
 export async function activate(context: vscode.ExtensionContext): Promise<void> {
   const bridge = new KulalaCoreBridge(context);
   const responsePanel = new ResponsePanel(context);
-  const runner = new RequestRunner(bridge, context, responsePanel);
+  const openapiPanel = new OpenAPIPanel(context);
+  const runner = new RequestRunner(bridge, context, responsePanel, openapiPanel);
   const diagnostics = new KulalaDiagnostics(bridge, context);
   const statusBar = new KulalaStatusBar(context);
 
@@ -97,6 +99,34 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
     }),
     vscode.commands.registerCommand("kulala.cancelRequest", () => runner.cancel()),
     vscode.commands.registerCommand("kulala.showResponse", () => responsePanel.revealLast()),
+    vscode.commands.registerCommand("kulala.openOpenapiExplorer", async (atLine?: number) => {
+      const editor = activeHttpEditor();
+      if (!editor) return;
+      const pos =
+        typeof atLine === "number"
+          ? revivePosition({ line: atLine, character: 0 }, editor.selection.active)
+          : editor.selection.active;
+      editor.selection = new vscode.Selection(pos, pos);
+      await runner.openOpenapiExplorer(documentContext(editor));
+    }),
+    vscode.commands.registerCommand("kulala.clearOpenapiSchemaCache", async () => {
+      const editor = vscode.window.activeTextEditor;
+      const cwd =
+        editor?.document.uri.scheme === "file"
+          ? path.dirname(editor.document.uri.fsPath)
+          : (vscode.workspace.workspaceFolders?.[0]?.uri.fsPath ?? process.cwd());
+      const { result, err } = await bridge.clearOpenapiSchema(undefined, cwd);
+      if (err || !result) {
+        void vscode.window.showErrorMessage(err ?? "Failed to clear OpenAPI schema cache.");
+        return;
+      }
+      const n = result.cleared;
+      void vscode.window.showInformationMessage(
+        n === 0
+          ? "No cached OpenAPI schemas to clear."
+          : `Cleared ${n} OpenAPI schema cache${n === 1 ? "" : "s"}.`,
+      );
+    }),
     vscode.commands.registerCommand("kulala.selectEnvironment", async () => {
       const editor = vscode.window.activeTextEditor;
       const cwd =

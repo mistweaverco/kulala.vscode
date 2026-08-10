@@ -1,6 +1,6 @@
 import type { KulalaRequestResult } from "../core/types";
 import type { VerboseBodyView, VerboseView } from "../../shared/response-view";
-import { formatBodyDisplay, highlightJson } from "./body";
+import { formatBodyDisplay } from "./body";
 import { headerRows } from "./format";
 
 function bodyViewFromDisplay(display: {
@@ -10,7 +10,7 @@ function bodyViewFromDisplay(display: {
   binaryNote?: string;
 }): VerboseBodyView {
   if (display.kind === "json") {
-    return { bodyKind: "json", body: display.text, bodyHtml: display.html };
+    return { bodyKind: "json", body: display.text };
   }
   if (display.kind === "binary") {
     return { bodyKind: "text", body: display.binaryNote ?? "(binary body omitted)" };
@@ -29,7 +29,7 @@ function formatRequestBody(body: string | undefined): VerboseBodyView {
   if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
     try {
       const text = JSON.stringify(JSON.parse(body), null, 2);
-      return { bodyKind: "json", body: text, bodyHtml: highlightJson(text) };
+      return { bodyKind: "json", body: text };
     } catch {
       // not JSON
     }

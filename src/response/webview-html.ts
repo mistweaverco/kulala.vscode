@@ -1,5 +1,6 @@
 import * as fs from "node:fs";
 import * as vscode from "vscode";
+import type { OpenAPIViewState } from "../../shared/openapi-view";
 import type { WebviewPayload } from "../../shared/response-view";
 
 export function webviewDistUri(extensionUri: vscode.Uri): vscode.Uri {
@@ -29,26 +30,37 @@ function rewriteWebviewAssets(html: string, webview: vscode.Webview, base: vscod
 
 function injectHeadExtras(
   html: string,
-  payload: WebviewPayload,
-  webview: vscode.Webview,
-  base: vscode.Uri,
-  cspSource: string,
+  opts: {
+    routeHash: string;
+    injectScript: string;
+    webview: vscode.Webview;
+    base: vscode.Uri;
+    cspSource: string;
+  },
 ): string {
-  const json = JSON.stringify(payload).replace(/</g, "\\u003c");
   const csp = [
     "default-src 'none'",
-    `style-src ${cspSource} 'unsafe-inline'`,
-    `script-src ${cspSource} 'unsafe-inline'`,
-    `connect-src ${cspSource}`,
+    `style-src ${opts.cspSource} 'unsafe-inline'`,
+    `script-src ${opts.cspSource} 'unsafe-inline' blob:`,
+    `worker-src ${opts.cspSource} blob: data:`,
+    `font-src ${opts.cspSource} data:`,
+    `connect-src ${opts.cspSource}`,
     "img-src data: https:",
   ].join("; ");
   const injection = [
     `<meta http-equiv="Content-Security-Policy" content="${csp}" />`,
-    `<base href="${webviewBaseHref(webview, base)}" />`,
-    `<script>if (!location.hash || location.hash === "#") location.hash = "#/";</script>`,
-    `<script>window.__KULALA__=${json};</script>`,
+    `<base href="${webviewBaseHref(opts.webview, opts.base)}" />`,
+    `<script>location.hash = ${JSON.stringify(opts.routeHash)};</script>`,
+    opts.injectScript,
   ].join("\n");
   return html.replace("<head>", `<head>\n${injection}`);
+}
+
+function loadIndexHtml(extensionUri: vscode.Uri, webview: vscode.Webview): string {
+  const base = webviewDistUri(extensionUri);
+  const indexPath = vscode.Uri.joinPath(base, "index.html");
+  let html = fs.readFileSync(indexPath.fsPath, "utf8");
+  return rewriteWebviewAssets(html, webview, base);
 }
 
 export function renderResponseWebview(
@@ -57,13 +69,38 @@ export function renderResponseWebview(
   payload: WebviewPayload,
 ): string {
   const base = webviewDistUri(extensionUri);
-  const indexPath = vscode.Uri.joinPath(base, "index.html");
-  let html = fs.readFileSync(indexPath.fsPath, "utf8");
-  html = rewriteWebviewAssets(html, webview, base);
-  html = injectHeadExtras(html, payload, webview, base, webview.cspSource);
-  return html;
+  const html = loadIndexHtml(extensionUri, webview);
+  const json = JSON.stringify(payload).replace(/</g, "\\u003c");
+  return injectHeadExtras(html, {
+    routeHash: "#/",
+    injectScript: `<script>window.__KULALA__=${json};</script>`,
+    webview,
+    base,
+    cspSource: webview.cspSource,
+  });
+}
+
+export function renderOpenapiWebview(
+  extensionUri: vscode.Uri,
+  webview: vscode.Webview,
+  payload: OpenAPIViewState,
+): string {
+  const base = webviewDistUri(extensionUri);
+  const html = loadIndexHtml(extensionUri, webview);
+  const json = JSON.stringify(payload).replace(/</g, "\\u003c");
+  return injectHeadExtras(html, {
+    routeHash: "#/openapi",
+    injectScript: `<script>window.__KULALA_OPENAPI__=${json};</script>`,
+    webview,
+    base,
+    cspSource: webview.cspSource,
+  });
 }
 
 export function postWebviewState(webview: vscode.Webview, payload: WebviewPayload): void {
   void webview.postMessage({ type: "state", payload });
+}
+
+export function postOpenapiState(webview: vscode.Webview, payload: OpenAPIViewState): void {
+  void webview.postMessage({ type: "openapiState", payload });
 }

@@ -205,11 +205,21 @@ body {
   }
 
   .kulala-pane {
-    @apply min-h-0 flex-1 overflow-auto;
+    @apply flex min-h-0 flex-1 flex-col overflow-auto;
   }
 
   .kulala-pane-hidden {
     display: none !important;
+  }
+
+  .kulala-monaco-pane {
+    @apply h-full min-h-0 w-full flex-1;
+    min-height: 12rem;
+  }
+
+  .kulala-verbose-monaco {
+    min-height: 10rem;
+    height: 14rem;
   }
 
   .kulala-body-text,

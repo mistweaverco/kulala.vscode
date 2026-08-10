@@ -3,6 +3,7 @@ import type { KulalaCoreBridge } from "./core/bridge";
 import type { KulalaRequestResult, KulalaRunLimit } from "./core/types";
 import { getSelectedEnv } from "./config";
 import type { DocumentContext } from "./document";
+import { OpenAPIPanel } from "./openapi/panel";
 import { formatBodyDisplay } from "./response/body";
 import { ResponsePanel } from "./response/panel";
 import { WebSocketSession } from "./websocket/session";
@@ -72,6 +73,7 @@ export class RequestRunner {
     private readonly bridge: KulalaCoreBridge,
     private readonly context: vscode.ExtensionContext,
     private readonly panel: ResponsePanel,
+    private readonly openapiPanel: OpenAPIPanel,
   ) {
     this.panel.setHandlers({
       onApplyJqFilter: (filter, entryId) => {
@@ -84,6 +86,11 @@ export class RequestRunner {
       onCloseWebSocket: (entryId) => {
         if (entryId !== this.wsEntryId) return;
         this.closeWebSocket();
+      },
+    });
+    this.openapiPanel.setHandlers({
+      onRunOperation: (operationKey, parameterOverrides) => {
+        void this.runOpenApiOperation(operationKey, parameterOverrides);
       },
     });
   }
@@ -266,11 +273,110 @@ export class RequestRunner {
     if (item.skipped && item.success) {
       return;
     }
+    if (item.openapiUi && item.openapi) {
+      const folder = ctx.filepath
+        ? vscode.workspace.getWorkspaceFolder(vscode.Uri.file(ctx.filepath))
+        : undefined;
+      const env = getSelectedEnv(this.context, folder ?? undefined);
+      this.openapiPanel.show(item.openapi, { ...ctx, env });
+      return;
+    }
     if (item.protocol === "websocket") {
       await this.startWebSocket(item, ctx);
       return;
     }
     this.panel.show(ResponsePanel.fromResult(item));
+  }
+
+  async openOpenapiExplorer(ctx: DocumentContext): Promise<void> {
+    this.lastCtx = ctx;
+    const folder = ctx.filepath
+      ? vscode.workspace.getWorkspaceFolder(vscode.Uri.file(ctx.filepath))
+      : undefined;
+    const env = getSelectedEnv(this.context, folder ?? undefined);
+    const { result, err } = await this.bridge.openapiLoad({
+      content: ctx.content,
+      filepath: ctx.filepath,
+      line: ctx.line,
+      column: ctx.column,
+      env,
+      cwd: ctx.cwd,
+    });
+    if (!result?.ok || !result.openapi) {
+      const loadError = !result ? err : result.ok === false ? result.error : err;
+      if (this.openapiPanel.revealLast()) {
+        void vscode.window.showWarningMessage(
+          loadError ?? "No OpenAPI block at cursor; showing last explorer.",
+        );
+        return;
+      }
+      void vscode.window.showErrorMessage(loadError ?? "Failed to load OpenAPI explorer.");
+      return;
+    }
+    this.openapiPanel.show(result.openapi, { ...ctx, env });
+  }
+
+  async runOpenApiOperation(
+    operationKey: string,
+    parameterOverrides: Record<string, string>,
+  ): Promise<void> {
+    const parent = this.openapiPanel.getParentContext();
+    if (!parent) {
+      void vscode.window.showWarningMessage("No OpenAPI parent request context.");
+      return;
+    }
+    if (this.running) {
+      void vscode.window.showWarningMessage("A Kulala request is already running.");
+      return;
+    }
+
+    this.running = true;
+    this.lastCtx = parent;
+    await vscode.commands.executeCommand("setContext", "kulala.requestRunning", true);
+    try {
+      const { result, err } = await this.bridge.openapiRunOperation({
+        content: parent.content,
+        filepath: parent.filepath,
+        line: parent.line,
+        column: parent.column,
+        env: parent.env,
+        operationKey,
+        parameterOverrides,
+        cwd: parent.cwd,
+      });
+      if (!result) {
+        this.panel.show(ResponsePanel.fromBridgeError(err ?? "OpenAPI operation failed"));
+        return;
+      }
+      if (isPrompt(result)) {
+        const inputs = await collectPromptInputs(result);
+        if (!inputs || !result.promptId) {
+          void vscode.window.showWarningMessage("Prompt cancelled or incomplete.");
+          return;
+        }
+        const cont = await this.bridge.continue(result.promptId, inputs, parent.cwd);
+        if (cont.err) {
+          this.panel.show(ResponsePanel.fromResult({ success: false, error: cont.err }));
+          return;
+        }
+        const contFirst = cont.wrapper?.data?.[0];
+        if (!contFirst) {
+          this.panel.show(
+            ResponsePanel.fromResult({
+              success: false,
+              error: "continue did not succeed",
+            }),
+          );
+          return;
+        }
+        await this.deliverItem(contFirst, parent);
+        return;
+      }
+      await this.deliverItem(result, parent);
+    } finally {
+      this.running = false;
+      await vscode.commands.executeCommand("setContext", "kulala.requestRunning", false);
+    }
   }
 
   private async startWebSocket(item: KulalaRequestResult, ctx: DocumentContext): Promise<void> {

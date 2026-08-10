@@ -2,6 +2,8 @@
   import { Tabs } from "melt/builders";
   import { onMount } from "svelte";
   import type { ResponseViewState, TabId, VerboseBodyView, WebviewPayload } from "../../../shared/response-view";
+  import MonacoBody from "$lib/MonacoBody.svelte";
+  import { monacoLanguage } from "$lib/monacoLanguage";
   import { getVsCodeApi, listenForExtensionMessages, readInitialPayload } from "$lib/vscode";
 
   const tabIds: TabId[] = ["body", "headers", "timings", "tests", "console", "verbose"];
@@ -39,6 +41,8 @@
   const timingMax = $derived(
     entry?.timingRows?.length ? Math.max(...entry.timingRows.map((r) => r.ms), 1) : 1,
   );
+  const bodyLanguage = $derived(monacoLanguage(entry?.bodyKind, entry?.contentType));
+  const theme = $derived(payload?.theme ?? "dark");
 
   function applyPayload(next: WebviewPayload) {
     payload = next;
@@ -84,8 +88,8 @@
     getVsCodeApi()?.postMessage({ type: "clearHistory" });
   }
 
-  function bodyLabel(body: VerboseBodyView): string {
-    return body.body || "(empty)";
+  function verboseLanguage(body: VerboseBodyView): string {
+    return monacoLanguage(body.bodyKind);
   }
 
   onMount(() => {
@@ -266,12 +270,10 @@
               </div>
             {:else if entry.bodyKind === "binary" && entry.binaryNote}
               <div class="kulala-body-text p-4 opacity-70">{entry.binaryNote}</div>
-            {:else if entry.bodyKind === "json" && entry.bodyHtml}
-              <div class="kulala-body-json p-4">
-                <code class="kulala-json">{@html entry.bodyHtml}</code>
-              </div>
             {:else}
-              <div class="kulala-body-text p-4">{entry.body || "(empty)"}</div>
+              <div class="kulala-monaco-pane">
+                <MonacoBody value={entry.body || ""} language={bodyLanguage} {theme} />
+              </div>
             {/if}
           </div>
 
@@ -405,13 +407,13 @@
 
                 <section class="kulala-verbose-section">
                   <h3 class="kulala-verbose-title">Request body</h3>
-                  {#if entry.verbose.requestBody.bodyKind === "json" && entry.verbose.requestBody.bodyHtml}
-                    <div class="kulala-body-json kulala-verbose-body">
-                      <code class="kulala-json">{@html entry.verbose.requestBody.bodyHtml}</code>
-                    </div>
-                  {:else}
-                    <div class="kulala-body-text kulala-verbose-body">{bodyLabel(entry.verbose.requestBody)}</div>
-                  {/if}
+                  <div class="kulala-monaco-pane kulala-verbose-monaco">
+                    <MonacoBody
+                      value={entry.verbose.requestBody.body || ""}
+                      language={verboseLanguage(entry.verbose.requestBody)}
+                      {theme}
+                    />
+                  </div>
                 </section>
 
                 <section class="kulala-verbose-section">
@@ -440,13 +442,13 @@
 
                 <section class="kulala-verbose-section">
                   <h3 class="kulala-verbose-title">Response body</h3>
-                  {#if entry.verbose.responseBody.bodyKind === "json" && entry.verbose.responseBody.bodyHtml}
-                    <div class="kulala-body-json kulala-verbose-body">
-                      <code class="kulala-json">{@html entry.verbose.responseBody.bodyHtml}</code>
-                    </div>
-                  {:else}
-                    <div class="kulala-body-text kulala-verbose-body">{bodyLabel(entry.verbose.responseBody)}</div>
-                  {/if}
+                  <div class="kulala-monaco-pane kulala-verbose-monaco">
+                    <MonacoBody
+                      value={entry.verbose.responseBody.body || ""}
+                      language={verboseLanguage(entry.verbose.responseBody)}
+                      {theme}
+                    />
+                  </div>
                 </section>
               </div>
             {:else}

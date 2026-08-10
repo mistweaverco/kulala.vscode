@@ -61,6 +61,51 @@ export type KulalaRequestResult = {
   redirectChain?: unknown[];
   verboseTrace?: string;
   request?: { method?: string; url?: string; headers?: Record<string, string>; body?: string };
+  /** Open OpenAPI explorer instead of the standard response panel. */
+  openapiUi?: true;
+  openapi?: OpenAPIUiPayload;
+};
+
+export type OpenAPIUITreeNodeKind =
+  | "section"
+  | "operation"
+  | "parameter"
+  | "response"
+  | "schema"
+  | "text"
+  | "tryItOut";
+
+export type OpenAPIUITreeNode = {
+  id: string;
+  kind: OpenAPIUITreeNodeKind;
+  title: string;
+  badge?: string;
+  description?: string;
+  children?: OpenAPIUITreeNode[];
+  operationKey?: string;
+  paramName?: string;
+  paramIn?: string;
+  defaultValue?: string;
+  editable?: boolean;
+  options?: string[];
+  inputType?: "text" | "select" | "multiSelect";
+};
+
+export type OpenAPIUiPayload = {
+  cacheKey: string;
+  fromCache: boolean;
+  tree: OpenAPIUITreeNode[];
+  title?: string;
+  version?: string;
+};
+
+export type OpenAPILoadResult =
+  | { ok: true; openapi: OpenAPIUiPayload }
+  | { ok: false; error: string };
+
+export type ClearOpenAPISchemaResult = {
+  cleared: number;
+  keys?: string[];
 };
 
 export type KulalaResponseWrapper = {

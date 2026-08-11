@@ -219,7 +219,7 @@
     <div class="kulala-empty-main">
       <p>No OpenAPI tree loaded</p>
       <p class="text-xs opacity-60">
-        Run a <code># @kulala-openapi-json</code> request or use Open OpenAPI Explorer.
+        Run a <code># @kulala-openapi-explorer</code> request or use Open OpenAPI Explorer.
       </p>
     </div>
   {:else}

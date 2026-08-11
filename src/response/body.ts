@@ -147,7 +147,9 @@ export function preferredResponseBody(item: KulalaRequestResult): KulalaResponse
       .filter((m) => typeof m === "string" && m.trim().length > 0)
       .join("\n");
     const footer =
-      item.skipped && item.success ? "Request skipped by script" : (item.error ?? "Request failed");
+      item.skipped && item.success
+        ? (item.message ?? "Request skipped by script")
+        : (item.error ?? "Request failed");
     const content = logs.length > 0 ? `${logs}\n\n${footer}` : footer;
     return { type: "text", content, mediaType: "text/plain" };
   }

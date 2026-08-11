@@ -103,6 +103,7 @@ export class ResponsePanel {
   private activeTab: TabId = "body";
   private handlers: PanelHandlers = {};
   private webviewHtmlReady = false;
+  private viewColumn: vscode.ViewColumn | undefined;
 
   constructor(private readonly context: vscode.ExtensionContext) {}
 
@@ -110,7 +111,8 @@ export class ResponsePanel {
     this.handlers = handlers;
   }
 
-  show(state: ResponseViewState): void {
+  show(state: ResponseViewState, opts?: { viewColumn?: vscode.ViewColumn }): void {
+    this.viewColumn = opts?.viewColumn;
     this.pushHistory(state);
     this.last = state;
     this.ensurePanel();
@@ -295,21 +297,17 @@ export class ResponsePanel {
   }
 
   private ensurePanel(): void {
+    const column = this.viewColumn ?? responseViewColumn();
     if (this.panel) {
-      this.panel.reveal(responseViewColumn());
+      this.panel.reveal(column);
       return;
     }
 
-    this.panel = vscode.window.createWebviewPanel(
-      "kulalaResponse",
-      "Kulala Response",
-      responseViewColumn(),
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [webviewDistUri(this.context.extensionUri)],
-      },
-    );
+    this.panel = vscode.window.createWebviewPanel("kulalaResponse", "Kulala Response", column, {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+      localResourceRoots: [webviewDistUri(this.context.extensionUri)],
+    });
     this.panel.iconPath = panelIconPath(this.context);
     this.panel.onDidDispose(() => {
       this.panel = undefined;

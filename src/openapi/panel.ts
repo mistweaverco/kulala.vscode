@@ -6,7 +6,7 @@ import type {
 } from "../../shared/openapi-view";
 import type { OpenAPIUiPayload, OpenAPIUITreeNode } from "../core/types";
 import type { DocumentContext } from "../document";
-import { responseViewColumn } from "../config";
+import { openapiViewColumn } from "../config";
 import { postOpenapiState, renderOpenapiWebview, webviewDistUri } from "../response/webview-html";
 
 export type OpenAPIPanelContext = DocumentContext & {
@@ -90,6 +90,10 @@ export class OpenAPIPanel {
     return true;
   }
 
+  isOpen(): boolean {
+    return this.panel !== undefined;
+  }
+
   show(openapi: OpenAPIUiPayload, ctx: OpenAPIPanelContext): void {
     this.parentCtx = ctx;
     this.tryValues = seedTryValues(openapi.tree);
@@ -107,20 +111,15 @@ export class OpenAPIPanel {
 
   private ensurePanel(): void {
     if (this.panel) {
-      this.panel.reveal(responseViewColumn());
+      this.panel.reveal(openapiViewColumn());
       return;
     }
 
-    this.panel = vscode.window.createWebviewPanel(
-      "kulalaOpenapi",
-      "OpenAPI",
-      responseViewColumn(),
-      {
-        enableScripts: true,
-        retainContextWhenHidden: true,
-        localResourceRoots: [webviewDistUri(this.context.extensionUri)],
-      },
-    );
+    this.panel = vscode.window.createWebviewPanel("kulalaOpenapi", "OpenAPI", openapiViewColumn(), {
+      enableScripts: true,
+      retainContextWhenHidden: true,
+      localResourceRoots: [webviewDistUri(this.context.extensionUri)],
+    });
     this.panel.iconPath = panelIconPath(this.context);
     this.panel.onDidDispose(() => {
       this.panel = undefined;

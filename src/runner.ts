@@ -1,7 +1,7 @@
 import * as vscode from "vscode";
 import type { KulalaCoreBridge } from "./core/bridge";
 import type { KulalaRequestResult, KulalaRunLimit } from "./core/types";
-import { getSelectedEnv } from "./config";
+import { getSelectedEnv, responseViewColumnAfterOpenapi } from "./config";
 import type { DocumentContext } from "./document";
 import { OpenAPIPanel } from "./openapi/panel";
 import { formatBodyDisplay } from "./response/body";
@@ -269,7 +269,23 @@ export class RequestRunner {
     }
   }
 
-  private async deliverItem(item: KulalaRequestResult, ctx: DocumentContext): Promise<void> {
+  private responseColumnAfterOpenapi(): vscode.ViewColumn | undefined {
+    return this.openapiPanel.isOpen() ? responseViewColumnAfterOpenapi() : undefined;
+  }
+
+  private showResponse(
+    state: ReturnType<typeof ResponsePanel.fromResult>,
+    afterOpenapi = false,
+  ): void {
+    const viewColumn = afterOpenapi ? this.responseColumnAfterOpenapi() : undefined;
+    this.panel.show(state, viewColumn ? { viewColumn } : undefined);
+  }
+
+  private async deliverItem(
+    item: KulalaRequestResult,
+    ctx: DocumentContext,
+    opts?: { afterOpenapi?: boolean },
+  ): Promise<void> {
     if (item.openapiUi && item.openapi) {
       const folder = ctx.filepath
         ? vscode.workspace.getWorkspaceFolder(vscode.Uri.file(ctx.filepath))
@@ -282,7 +298,7 @@ export class RequestRunner {
       await this.startWebSocket(item, ctx);
       return;
     }
-    this.panel.show(ResponsePanel.fromResult(item));
+    this.showResponse(ResponsePanel.fromResult(item), opts?.afterOpenapi === true);
   }
 
   async openOpenapiExplorer(ctx: DocumentContext): Promise<void> {
@@ -342,7 +358,7 @@ export class RequestRunner {
         cwd: parent.cwd,
       });
       if (!result) {
-        this.panel.show(ResponsePanel.fromBridgeError(err ?? "OpenAPI operation failed"));
+        this.showResponse(ResponsePanel.fromBridgeError(err ?? "OpenAPI operation failed"), true);
         return;
       }
       if (isPrompt(result)) {
@@ -353,23 +369,24 @@ export class RequestRunner {
         }
         const cont = await this.bridge.continue(result.promptId, inputs, parent.cwd);
         if (cont.err) {
-          this.panel.show(ResponsePanel.fromResult({ success: false, error: cont.err }));
+          this.showResponse(ResponsePanel.fromResult({ success: false, error: cont.err }), true);
           return;
         }
         const contFirst = cont.wrapper?.data?.[0];
         if (!contFirst) {
-          this.panel.show(
+          this.showResponse(
             ResponsePanel.fromResult({
               success: false,
               error: "continue did not succeed",
             }),
+            true,
           );
           return;
         }
-        await this.deliverItem(contFirst, parent);
+        await this.deliverItem(contFirst, parent, { afterOpenapi: true });
         return;
       }
-      await this.deliverItem(result, parent);
+      await this.deliverItem(result, parent, { afterOpenapi: true });
     } finally {
       this.running = false;
       await vscode.commands.executeCommand("setContext", "kulala.requestRunning", false);

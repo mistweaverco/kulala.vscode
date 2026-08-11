@@ -70,6 +70,16 @@ export function responseViewColumn(): vscode.ViewColumn {
   }
 }
 
+/** First editor column beside the HTTP file (OpenAPI explorer). */
+export function openapiViewColumn(): vscode.ViewColumn {
+  return vscode.ViewColumn.Beside;
+}
+
+/** Second split when OpenAPI explorer is already open (response panel). */
+export function responseViewColumnAfterOpenapi(): vscode.ViewColumn {
+  return vscode.ViewColumn.Three;
+}
+
 export function selectedEnvKey(folderUri?: vscode.Uri): string {
   const key = folderUri?.fsPath ?? "global";
   return `kulala.selectedEnv:${key}`;

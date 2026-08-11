@@ -1,3 +1,13 @@
+## [0.11.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.10.0...v0.11.0) (2026-08-11)
+
+### ⚠ BREAKING CHANGES
+
+* **openapi:** openapi-json has been renamed to openapi-explorer
+
+### Features
+
+* **openapi:** extend script support for openapi-explorer ([527d0d6](https://github.com/mistweaverco/kulala.vscode/commit/527d0d6dfe3efa3c386452d8c2d881deeb81cea5))
+
 ## [0.10.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.9.0...v0.10.0) (2026-08-10)
 
 ### Features

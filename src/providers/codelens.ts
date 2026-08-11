@@ -11,7 +11,7 @@ function blockHasOpenapiOperator(document: vscode.TextDocument, block: ParsedBlo
   const start0 = Math.max(0, (block.position?.start ?? 1) - 1);
   const end0 = Math.min(document.lineCount, block.position?.end ?? start0 + 1);
   for (let line = start0; line < end0; line++) {
-    if (/@kulala-openapi-json\b/.test(document.lineAt(line).text)) {
+    if (/@kulala-openapi-explorer\b/.test(document.lineAt(line).text)) {
       return true;
     }
   }

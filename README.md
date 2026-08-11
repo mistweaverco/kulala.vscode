@@ -38,7 +38,7 @@ Kulala is swahili for "rest" or "relax."
 - **Send request** at cursor (`Ctrl+Alt+R` / `Cmd+Alt+R`) or via CodeLens / editor title
 - **Send all** requests in the file (`Ctrl+Alt+A` / `Cmd+Alt+A`)
 - **Response panel** with Body (read-only Monaco, language-aware), Headers, timings, tests, and script console
-- **OpenAPI explorer** for `# @kulala-openapi-json` blocks (foldable tree, try-it-out, run operations)
+- **OpenAPI explorer** for `# @kulala-openapi-explorer` blocks (foldable tree, try-it-out, run operations)
 - **Environments** from kulala-core (`http-client.env.json`, kuba, etc.)
 - **Completion & hover** via kulala-core LSP helpers
 - **Diagnostics** in `.http` files
@@ -152,11 +152,11 @@ Use **Kulala: Send Request** or click the CodeLens above the request.
 
 ### OpenAPI explorer
 
-Fetch a spec with the `# @kulala-openapi-json` directive, then explore and run operations from the OpenAPI panel:
+Fetch a spec with the `# @kulala-openapi-explorer` directive, then explore and run operations from the OpenAPI panel:
 
 ```http
 ### Petstore
-# @kulala-openapi-json
+# @kulala-openapi-explorer
 GET https://petstore3.swagger.io/api/v3/openapi.json
 ```
 

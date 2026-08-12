@@ -1,3 +1,9 @@
+## [0.12.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.11.0...v0.12.0) (2026-08-12)
+
+### Features
+
+* **grpc:** add support `@grpc-insecure` operator ([90e802d](https://github.com/mistweaverco/kulala.vscode/commit/90e802dd78133b9299e409f695bcea0d7e16ca28))
+
 ## [0.11.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.10.0...v0.11.0) (2026-08-11)
 
 ### ⚠ BREAKING CHANGES

@@ -104,6 +104,8 @@ export type OpenAPILoadResult =
   | { ok: true; openapi: OpenAPIUiPayload }
   | { ok: false; error: string };
 
+export type OpenAPIToHttpResult = { ok: true; content: string } | { ok: false; error: string };
+
 export type ClearOpenAPISchemaResult = {
   cleared: number;
   keys?: string[];

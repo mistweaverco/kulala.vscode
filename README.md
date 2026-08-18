@@ -38,7 +38,7 @@ Kulala is swahili for "rest" or "relax."
 - **Send request** at cursor (`Ctrl+Alt+R` / `Cmd+Alt+R`) or via CodeLens / editor title
 - **Send all** requests in the file (`Ctrl+Alt+A` / `Cmd+Alt+A`)
 - **Response panel** with Body (read-only Monaco, language-aware), Headers, timings, tests, and script console
-- **OpenAPI explorer** for `# @kulala-openapi-explorer` blocks (foldable tree, try-it-out, run operations)
+- **OpenAPI explorer** for `# @kulala-openapi-explorer` blocks (foldable tree, try-it-out, load values from files, copy as HTTP)
 - **Environments** from kulala-core (`http-client.env.json`, kuba, etc.)
 - **Completion & hover** via kulala-core LSP helpers
 - **Diagnostics** in `.http` files
@@ -162,6 +162,9 @@ GET https://petstore3.swagger.io/api/v3/openapi.json
 
 - Running the block opens the **OpenAPI explorer** (not the normal response panel).
 - Use **Kulala: Open OpenAPI Explorer** to reopen the last tree or load from the cursor.
+- Use **From file** on a Try it out field to load that value from a file.
+- Use **Copy as HTTP** on an operation (or **Kulala: Copy OpenAPI Operation as HTTP**)
+  to copy a standalone `.http` request to the clipboard.
 - Use **Kulala: Clear OpenAPI Schema Cache** to drop cached specs.
 - Operation runs open the standard response panel (Monaco body).
 

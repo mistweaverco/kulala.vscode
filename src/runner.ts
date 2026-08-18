@@ -92,6 +92,9 @@ export class RequestRunner {
       onRunOperation: (operationKey, parameterOverrides) => {
         void this.runOpenApiOperation(operationKey, parameterOverrides);
       },
+      onCopyAsHttp: (operationKey, parameterOverrides) => {
+        void this.copyOpenApiAsHttp(operationKey, parameterOverrides);
+      },
     });
   }
 
@@ -327,6 +330,44 @@ export class RequestRunner {
       return;
     }
     this.openapiPanel.show(result.openapi, { ...ctx, env });
+  }
+
+  async copyLastOpenApiAsHttp(): Promise<void> {
+    const operationKey = this.openapiPanel.getLastOperationKey();
+    if (!operationKey) {
+      void vscode.window.showWarningMessage("Select an OpenAPI operation to copy as HTTP.");
+      return;
+    }
+    await this.copyOpenApiAsHttp(operationKey, this.openapiPanel.getOverrides(operationKey));
+  }
+
+  async copyOpenApiAsHttp(
+    operationKey: string,
+    parameterOverrides: Record<string, string>,
+  ): Promise<void> {
+    const parent = this.openapiPanel.getParentContext();
+    if (!parent) {
+      void vscode.window.showWarningMessage("No OpenAPI parent request context.");
+      return;
+    }
+    const { result, err } = await this.bridge.openapiToHttp({
+      content: parent.content,
+      filepath: parent.filepath,
+      line: parent.line,
+      column: parent.column,
+      env: parent.env,
+      operationKey,
+      parameterOverrides,
+      cwd: parent.cwd,
+    });
+    if (!result?.ok) {
+      void vscode.window.showErrorMessage(
+        (!result ? err : result.error) ?? "Failed to convert OpenAPI operation to HTTP.",
+      );
+      return;
+    }
+    await vscode.env.clipboard.writeText(result.content);
+    void vscode.window.showInformationMessage("Copied HTTP request to clipboard.");
   }
 
   async runOpenApiOperation(

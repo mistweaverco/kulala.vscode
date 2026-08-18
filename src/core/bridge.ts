@@ -14,6 +14,7 @@ import type {
   KulalaLspFiletype,
   ClearOpenAPISchemaResult,
   OpenAPILoadResult,
+  OpenAPIToHttpResult,
   KulalaRequestResult,
   LspCompletionItem,
   LspCompletionList,
@@ -470,6 +471,45 @@ export class KulalaCoreBridge {
       return { err: "invalid kulala-core openapi_run_operation output" };
     } catch {
       return { err: "invalid kulala-core openapi_run_operation output" };
+    }
+  }
+
+  async openapiToHttp(opts: {
+    content: string;
+    filepath?: string;
+    line: number;
+    column: number;
+    env?: string;
+    operationKey: string;
+    parameterOverrides?: Record<string, string>;
+    cwd?: string;
+  }): Promise<{ result?: OpenAPIToHttpResult; err?: string }> {
+    const job = await this.invoke(
+      {
+        action: "openapi_to_http",
+        content: opts.content,
+        filepath: opts.filepath,
+        line: opts.line,
+        column: opts.column,
+        env: opts.env ?? "default",
+        operationKey: opts.operationKey,
+        ...(opts.parameterOverrides && Object.keys(opts.parameterOverrides).length > 0
+          ? { parameterOverrides: opts.parameterOverrides }
+          : {}),
+      },
+      opts.cwd,
+    );
+    const raw = job.stdout.trim();
+    if (!raw) {
+      return { err: job.stderr.trim() || "kulala-core openapi_to_http failed" };
+    }
+    try {
+      const result = JSON.parse(raw) as OpenAPIToHttpResult & { type?: string };
+      if (result.ok === true && typeof result.content === "string") return { result };
+      if (result.ok === false) return { result };
+      return { err: "invalid kulala-core openapi_to_http output" };
+    } catch {
+      return { err: "invalid kulala-core openapi_to_http output" };
     }
   }
 

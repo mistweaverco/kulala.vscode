@@ -52,6 +52,18 @@
     getVsCodeApi()?.postMessage({ type: "runOperation", operationKey });
   }
 
+  function copyAsHttp(operationKey: string) {
+    getVsCodeApi()?.postMessage({ type: "copyAsHttp", operationKey });
+  }
+
+  function pickFile(operationKey: string, paramName: string) {
+    getVsCodeApi()?.postMessage({ type: "pickFile", operationKey, paramName });
+  }
+
+  function isFilePickable(node: OpenAPIUITreeNode): boolean {
+    return node.inputType !== "select" && node.inputType !== "multiSelect";
+  }
+
   function multiSelected(value: string): string[] {
     return value
       .split(",")
@@ -111,6 +123,13 @@
         <span class="openapi-title openapi-kind-{node.kind}">{node.title}</span>
 
         {#if node.kind === "operation" && node.operationKey}
+          <button
+            type="button"
+            class="kulala-btn kulala-btn-sm kulala-btn-ghost"
+            onclick={() => copyAsHttp(node.operationKey!)}
+          >
+            Copy as HTTP
+          </button>
           <button
             type="button"
             class="kulala-btn kulala-btn-sm kulala-btn-primary openapi-run"
@@ -185,6 +204,15 @@
                 }
               }}
             />
+          {/if}
+          {#if isFilePickable(node)}
+            <button
+              type="button"
+              class="kulala-btn kulala-btn-sm kulala-btn-ghost"
+              onclick={() => pickFile(node.operationKey!, node.paramName!)}
+            >
+              From file
+            </button>
           {/if}
           {#if node.operationKey}
             <button

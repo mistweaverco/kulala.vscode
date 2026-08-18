@@ -1,3 +1,4 @@
+import * as path from "node:path";
 import * as vscode from "vscode";
 import type {
   OpenAPITryValues,
@@ -15,6 +16,7 @@ export type OpenAPIPanelContext = DocumentContext & {
 
 export type OpenAPIPanelHandlers = {
   onRunOperation?: (operationKey: string, parameterOverrides: Record<string, string>) => void;
+  onCopyAsHttp?: (operationKey: string, parameterOverrides: Record<string, string>) => void;
 };
 
 function vscodeTheme(): "light" | "dark" {
@@ -62,6 +64,7 @@ export class OpenAPIPanel {
   private last: OpenAPIViewState | undefined;
   private parentCtx: OpenAPIPanelContext | undefined;
   private tryValues: OpenAPITryValues = {};
+  private lastOperationKey: string | undefined;
   private handlers: OpenAPIPanelHandlers = {};
   private webviewHtmlReady = false;
 
@@ -83,6 +86,14 @@ export class OpenAPIPanel {
     return this.last?.cacheKey;
   }
 
+  getLastOperationKey(): string | undefined {
+    return this.lastOperationKey;
+  }
+
+  getOverrides(operationKey: string): Record<string, string> {
+    return overridesForOperation(this.tryValues, operationKey);
+  }
+
   revealLast(): boolean {
     if (!this.last) return false;
     this.ensurePanel();
@@ -96,6 +107,7 @@ export class OpenAPIPanel {
 
   show(openapi: OpenAPIUiPayload, ctx: OpenAPIPanelContext): void {
     this.parentCtx = ctx;
+    this.lastOperationKey = undefined;
     this.tryValues = seedTryValues(openapi.tree);
     this.last = {
       theme: vscodeTheme(),
@@ -133,14 +145,27 @@ export class OpenAPIPanel {
       if (msg.type === "setTryValue") {
         this.tryValues[msg.operationKey] ??= {};
         this.tryValues[msg.operationKey][msg.paramName] = msg.value;
+        this.lastOperationKey = msg.operationKey;
         if (this.last) {
           this.last = { ...this.last, tryValues: this.tryValues };
         }
         return;
       }
       if (msg.type === "runOperation") {
+        this.lastOperationKey = msg.operationKey;
         const overrides = overridesForOperation(this.tryValues, msg.operationKey);
         this.handlers.onRunOperation?.(msg.operationKey, overrides);
+        return;
+      }
+      if (msg.type === "copyAsHttp") {
+        this.lastOperationKey = msg.operationKey;
+        const overrides = overridesForOperation(this.tryValues, msg.operationKey);
+        this.handlers.onCopyAsHttp?.(msg.operationKey, overrides);
+        return;
+      }
+      if (msg.type === "pickFile") {
+        this.lastOperationKey = msg.operationKey;
+        void this.pickFileForInput(msg.operationKey, msg.paramName);
       }
     });
 
@@ -180,5 +205,28 @@ export class OpenAPIPanel {
     }
 
     postOpenapiState(webview, payload);
+  }
+
+  private async pickFileForInput(operationKey: string, paramName: string): Promise<void> {
+    const defaultUri = this.parentCtx?.filepath
+      ? vscode.Uri.file(path.dirname(this.parentCtx.filepath))
+      : vscode.workspace.workspaceFolders?.[0]?.uri;
+    const uris = await vscode.window.showOpenDialog({
+      canSelectFiles: true,
+      canSelectFolders: false,
+      canSelectMany: false,
+      title: "Load Try it out value from file",
+      defaultUri,
+    });
+    const uri = uris?.[0];
+    if (!uri) return;
+    const bytes = await vscode.workspace.fs.readFile(uri);
+    const value = new TextDecoder("utf-8").decode(bytes);
+    this.tryValues[operationKey] ??= {};
+    this.tryValues[operationKey][paramName] = value;
+    if (this.last) {
+      this.last = { ...this.last, tryValues: this.tryValues };
+    }
+    this.updateWebview();
   }
 }

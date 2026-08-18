@@ -109,6 +109,9 @@ export async function activate(context: vscode.ExtensionContext): Promise<void> 
       editor.selection = new vscode.Selection(pos, pos);
       await runner.openOpenapiExplorer(documentContext(editor));
     }),
+    vscode.commands.registerCommand("kulala.copyOpenapiAsHttp", () =>
+      runner.copyLastOpenApiAsHttp(),
+    ),
     vscode.commands.registerCommand("kulala.clearOpenapiSchemaCache", async () => {
       const editor = vscode.window.activeTextEditor;
       const cwd =

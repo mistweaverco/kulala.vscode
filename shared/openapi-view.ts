@@ -14,6 +14,8 @@ export type OpenAPIViewState = {
 export type OpenAPIWebviewMessage =
   | { type: "setTryValue"; operationKey: string; paramName: string; value: string }
   | { type: "runOperation"; operationKey: string }
+  | { type: "copyAsHttp"; operationKey: string }
+  | { type: "pickFile"; operationKey: string; paramName: string }
   | { type: "close" };
 
 export type OpenAPIExtensionMessage = { type: "openapiState"; payload: OpenAPIViewState };

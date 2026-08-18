@@ -1,3 +1,9 @@
+## [0.13.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.12.0...v0.13.0) (2026-08-18)
+
+### Features
+
+* **openapi:** add copy as http and load from file ([392a1d8](https://github.com/mistweaverco/kulala.vscode/commit/392a1d8951f6fe61732c627c1a55512654c4e145))
+
 ## [0.12.0](https://github.com/mistweaverco/kulala.vscode/compare/v0.11.0...v0.12.0) (2026-08-12)
 
 ### Features
